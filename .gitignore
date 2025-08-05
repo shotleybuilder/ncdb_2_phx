@@ -1,0 +1,67 @@
+# Elixir/Erlang build artifacts (exclude from package)
+/_build/
+/cover/
+/deps/
+/doc/
+/.fetch
+erl_crash.dump
+*.ez
+
+# Hex package tarball (built via "mix hex.build")
+airtable_sync_phoenix-*.tar
+
+# Temporary files
+/tmp/
+
+# OS-specific files (exclude from package)
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor/IDE files (exclude from package)
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.iml
+
+# Development environment files (exclude from package)
+.env
+.env.local
+.env.*.local
+
+# Log files (exclude from package)
+*.log
+
+# Elixir Language Server (exclude from package)
+.elixir_ls/
+
+# Dialyzer PLT files (exclude from package)
+*.plt
+*.plt.hash
+
+# Security analysis cache (exclude from package)
+.sobelow
+
+# Test databases (exclude from package)
+*.db
+*.sqlite
+*.sqlite3
+
+# Test artifacts (exclude from package)
+test/tmp/
+
+# IMPORTANT: Keep these files IN the package for hex distribution:
+# - lib/ (all source code)
+# - test/ (tests help users understand usage)
+# - guides/ (documentation)
+# - mix.exs (package definition)
+# - README.md (package documentation)
+# - CHANGELOG.md (version history)
+# - LICENSE (legal requirements)
+# - .formatter.exs (code formatting for users)
