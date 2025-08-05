@@ -3,8 +3,8 @@ defmodule AirtableSyncPhoenix.MixProject do
 
   @version "1.0.0"
   @description "A comprehensive, production-ready sync engine for Phoenix applications using Ash Framework. Enables syncing data from external sources (Airtable, CSV, APIs, databases) with real-time progress tracking, error handling, and LiveView admin interface."
-  @source_url "https://github.com/airtable-sync-phoenix/airtable_sync_phoenix"
-  @homepage_url "https://github.com/airtable-sync-phoenix/airtable_sync_phoenix"
+  @source_url "https://github.com/shotleybuilder/airtable_sync_phoenix"
+  @homepage_url "https://github.com/shotleybuilder/airtable_sync_phoenix"
 
   def project do
     [
