@@ -1,14 +1,14 @@
-defmodule AirtableSyncPhoenix.MixProject do
+defmodule NCDB2Phx.MixProject do
   use Mix.Project
 
   @version "1.0.0"
-  @description "A comprehensive, production-ready sync engine for Phoenix applications using Ash Framework. Enables syncing data from external sources (Airtable, CSV, APIs, databases) with real-time progress tracking, error handling, and LiveView admin interface."
-  @source_url "https://github.com/shotleybuilder/airtable_sync_phoenix"
-  @homepage_url "https://github.com/shotleybuilder/airtable_sync_phoenix"
+  @description "A comprehensive, production-ready import engine for Phoenix applications using Ash Framework. Enables importing data from no-code databases (Airtable, Baserow, Notion) and other sources (CSV, APIs, databases) with real-time progress tracking, error handling, and LiveView admin interface."
+  @source_url "https://github.com/shotleybuilder/ncdb_2_phx"
+  @homepage_url "https://github.com/shotleybuilder/ncdb_2_phx"
 
   def project do
     [
-      app: :airtable_sync_phoenix,
+      app: :ncdb_2_phx,
       version: @version,
       elixir: "~> 1.16",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -22,7 +22,7 @@ defmodule AirtableSyncPhoenix.MixProject do
       description: @description,
       source_url: @source_url,
       homepage_url: @homepage_url,
-      name: "AirtableSyncPhoenix",
+      name: "NCDB2Phx",
       
       # Test coverage
       test_coverage: [tool: ExCoveralls],
@@ -40,7 +40,7 @@ defmodule AirtableSyncPhoenix.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {AirtableSyncPhoenix.Application, []},
+      mod: {NCDB2Phx.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -106,9 +106,9 @@ defmodule AirtableSyncPhoenix.MixProject do
   defp docs do
     [
       main: "readme",
-      name: "AirtableSyncPhoenix",
+      name: "NCDB2Phx",
       source_ref: "v#{@version}",
-      canonical: "http://hexdocs.pm/airtable_sync_phoenix",
+      canonical: "https://hexdocs.pm/ncdb_2_phx",
       source_url: @source_url,
       extras: [
         "README.md",
@@ -157,7 +157,7 @@ defmodule AirtableSyncPhoenix.MixProject do
   defp package do
     [
       # Core package info
-      name: "airtable_sync_phoenix",
+      name: "ncdb_2_phx",
       description: @description,
       files: ~w(lib priv .formatter.exs mix.exs README* CHANGELOG* LICENSE* guides),
       licenses: ["Apache-2.0"],
@@ -171,7 +171,7 @@ defmodule AirtableSyncPhoenix.MixProject do
       links: %{
         "Homepage" => @homepage_url,
         "GitHub" => @source_url,
-        "Documentation" => "https://hexdocs.pm/airtable_sync_phoenix",
+        "Documentation" => "https://hexdocs.pm/ncdb_2_phx",
         "Changelog" => "#{@source_url}/blob/main/CHANGELOG.md",
         "Issues" => "#{@source_url}/issues",
         "Discussions" => "#{@source_url}/discussions"

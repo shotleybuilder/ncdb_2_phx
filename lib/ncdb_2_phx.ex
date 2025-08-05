@@ -1,6 +1,6 @@
-defmodule AirtableSyncPhoenix do
+defmodule NCDB2Phx do
   @moduledoc """
-  AirtableSyncPhoenix - A generic sync engine for Phoenix applications with Ash Framework.
+  NCDB2Phx - A no-code database to Phoenix import engine with Ash Framework.
   
   This package provides a complete, generic sync system that can be used in any
   Phoenix/Ash application. It includes all the resources, utilities, and
@@ -222,9 +222,9 @@ defmodule AirtableSyncPhoenix do
 
   def package_info do
     %{
-      name: "airtable_sync_phoenix",
+      name: "ncdb_2_phx",
       version: "1.0.0",
-      description: "Generic sync engine for Phoenix applications with Ash Framework",
+      description: "No-code database to Phoenix import engine with Ash Framework",
       features: [
         "Pluggable source adapters",
         "Real-time progress tracking", 
