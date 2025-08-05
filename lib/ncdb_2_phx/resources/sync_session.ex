@@ -1,10 +1,10 @@
-defmodule AirtableSyncPhoenix.Resources.SyncSession do
+defmodule NCDB2Phx.Resources.SyncSession do
   @moduledoc """
   Generic Ash resource for tracking sync sessions across any application.
   
   This resource provides a domain-agnostic way to track sync operations
   that can work with any Ash-based application. It's designed to be used
-  as part of the `airtable_sync_phoenix` package with minimal coupling to
+  as part of the `ncdb_2_phx` package with minimal coupling to
   the host application.
   
   ## Features
@@ -30,7 +30,7 @@ defmodule AirtableSyncPhoenix.Resources.SyncSession do
   ## Example Usage
   
       # Create a new sync session
-      {:ok, session} = Ash.create(AirtableSyncPhoenix.Resources.SyncSession, %{
+      {:ok, session} = Ash.create(NCDB2Phx.Resources.SyncSession, %{
         session_id: "sync_abc123",
         sync_type: :import_users,
         target_resource: "MyApp.Accounts.User",
@@ -57,7 +57,7 @@ defmodule AirtableSyncPhoenix.Resources.SyncSession do
   """
   
   use Ash.Resource,
-    domain: AirtableSyncPhoenix,
+    domain: NCDB2Phx,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshPhoenix.Form]
 
@@ -66,7 +66,7 @@ defmodule AirtableSyncPhoenix.Resources.SyncSession do
 
   postgres do
     table "airtable_sync_sessions"
-    repo AirtableSyncPhoenix.Repo
+    repo NCDB2Phx.Repo
   end
 
   attributes do
@@ -197,12 +197,12 @@ defmodule AirtableSyncPhoenix.Resources.SyncSession do
   end
 
   relationships do
-    has_many :sync_batches, AirtableSyncPhoenix.Resources.SyncBatch do
+    has_many :sync_batches, NCDB2Phx.Resources.SyncBatch do
       destination_attribute :session_id
       source_attribute :session_id
     end
     
-    has_many :sync_logs, AirtableSyncPhoenix.Resources.SyncLog do
+    has_many :sync_logs, NCDB2Phx.Resources.SyncLog do
       destination_attribute :session_id
       source_attribute :session_id
     end
@@ -519,7 +519,7 @@ defmodule AirtableSyncPhoenix.Resources.SyncSession do
   # Code interface helper functions
 
   def list_active_sessions(opts \\ []) do
-    AirtableSyncPhoenix.Resources.SyncSession
+    NCDB2Phx.Resources.SyncSession
     |> Ash.Query.filter(is_active == true)
     |> Ash.read(opts)
   end

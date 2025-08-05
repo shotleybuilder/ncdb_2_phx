@@ -4,7 +4,7 @@ defmodule EhsEnforcement.Sync.Generic.Resources.GenericSyncSession do
   
   This resource provides a domain-agnostic way to track sync operations
   that can work with any Ash-based application. It's designed to be extracted
-  as part of the `airtable_sync_phoenix` package with minimal coupling to
+  as part of the `ncdb_2_phx` package with minimal coupling to
   the host application.
   
   ## Features

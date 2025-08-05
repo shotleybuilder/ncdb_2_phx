@@ -1,6 +1,6 @@
 # Adapter Development Guide
 
-This guide covers how to create custom source adapters for AirtableSyncPhoenix, enabling sync from any data source.
+This guide covers how to create custom source adapters for NCDB2Phx, enabling sync from any data source.
 
 ## Overview
 
@@ -8,10 +8,10 @@ Adapters are the bridge between external data sources and the sync engine. They 
 
 ## Adapter Interface
 
-All adapters must implement the `AirtableSyncPhoenix.Utilities.SourceAdapter` behaviour:
+All adapters must implement the `NCDB2Phx.Utilities.SourceAdapter` behaviour:
 
 ```elixir
-@behaviour AirtableSyncPhoenix.Utilities.SourceAdapter
+@behaviour NCDB2Phx.Utilities.SourceAdapter
 
 # Required callbacks
 def initialize(config)
@@ -31,7 +31,7 @@ The package includes a production-ready Airtable adapter:
 
 ```elixir
 config = %{
-  source_adapter: AirtableSyncPhoenix.Adapters.AirtableAdapter,
+  source_adapter: NCDB2Phx.Adapters.AirtableAdapter,
   source_config: %{
     api_key: "patXXXXXXXXXXXXXX",
     base_id: "appXXXXXXXXXXXXXX",
@@ -48,7 +48,7 @@ config = %{
 For development and testing:
 
 ```elixir
-{:ok, test_adapter} = AirtableSyncPhoenix.Utilities.SourceAdapter.create_test_adapter(
+{:ok, test_adapter} = NCDB2Phx.Utilities.SourceAdapter.create_test_adapter(
   record_count: 100,
   record_template: fn index ->
     %{
@@ -78,7 +78,7 @@ defmodule MyApp.Adapters.CsvAdapter do
   - encoding: File encoding (default: :utf8)
   """
   
-  @behaviour AirtableSyncPhoenix.Utilities.SourceAdapter
+  @behaviour NCDB2Phx.Utilities.SourceAdapter
   
   require Logger
   
@@ -237,7 +237,7 @@ defmodule MyApp.Adapters.RestApiAdapter do
   - pagination: Pagination configuration
   """
   
-  @behaviour AirtableSyncPhoenix.Utilities.SourceAdapter
+  @behaviour NCDB2Phx.Utilities.SourceAdapter
   
   require Logger
   
@@ -438,7 +438,7 @@ For syncing between databases:
 
 ```elixir
 defmodule MyApp.Adapters.DatabaseAdapter do
-  @behaviour AirtableSyncPhoenix.Utilities.SourceAdapter
+  @behaviour NCDB2Phx.Utilities.SourceAdapter
   
   @impl true
   def initialize(config) do
@@ -595,7 +595,7 @@ defmodule MyApp.Syncs.CsvSyncIntegrationTest do
     }
     
     # Execute sync
-    assert {:ok, result} = AirtableSyncPhoenix.execute_sync(config)
+    assert {:ok, result} = NCDB2Phx.execute_sync(config)
     assert result.records_processed == 2
     assert result.records_created == 2
     
@@ -748,7 +748,7 @@ Consider publishing reusable adapters as separate packages:
 # my_csv_sync_adapter/mix.exs
 defp deps do
   [
-    {:airtable_sync_phoenix, "~> 1.0"}
+    {:ncdb_2_phx, "~> 1.0"}
   ]
 end
 ```
@@ -759,7 +759,7 @@ This allows others to use your adapter and contributes to the ecosystem.
 
 For help with adapter development:
 
-- Review the [SourceAdapter behaviour documentation](https://hexdocs.pm/airtable_sync_phoenix/AirtableSyncPhoenix.Utilities.SourceAdapter.html)
+- Review the [SourceAdapter behaviour documentation](https://hexdocs.pm/ncdb_2_phx/NCDB2Phx.Utilities.SourceAdapter.html)
 - Check existing adapter implementations in the package source
-- Ask questions in [GitHub Discussions](https://github.com/your-org/airtable_sync_phoenix/discussions)
-- Report adapter-related issues on [GitHub Issues](https://github.com/your-org/airtable_sync_phoenix/issues)
+- Ask questions in [GitHub Discussions](https://github.com/shotleybuilder/ncdb_2_phx/discussions)
+- Report adapter-related issues on [GitHub Issues](https://github.com/shotleybuilder/ncdb_2_phx/issues)

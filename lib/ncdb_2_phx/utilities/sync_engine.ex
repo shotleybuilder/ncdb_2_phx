@@ -4,7 +4,7 @@ defmodule EhsEnforcement.Sync.Generic.SyncEngine do
   
   This module provides a resource-agnostic sync engine that can work with any
   Ash resource and any data source adapter. Designed for future extraction
-  as the core of the `airtable_sync_phoenix` hex package.
+  as the core of the `ncdb_2_phx` hex package.
   
   ## Architecture
   

@@ -61,7 +61,7 @@ defmodule MyApp.Syncs.UserSync do
   def sync_users_from_airtable(opts \\ []) do
     config = %{
       # Source: Airtable
-      source_adapter: AirtableSyncPhoenix.Adapters.AirtableAdapter,
+      source_adapter: NCDB2Phx.Adapters.AirtableAdapter,
       source_config: %{
         api_key: System.get_env("AIRTABLE_API_KEY"),
         base_id: System.get_env("AIRTABLE_BASE_ID"),
@@ -101,7 +101,7 @@ defmodule MyApp.Syncs.UserSync do
     actor = Keyword.get(opts, :actor)
     
     # Execute the sync
-    case AirtableSyncPhoenix.execute_sync(config, actor: actor) do
+    case NCDB2Phx.execute_sync(config, actor: actor) do
       {:ok, result} ->
         IO.puts("✅ Sync completed successfully!")
         IO.puts("📊 Stats: #{result.records_processed} processed, #{result.records_created} created, #{result.records_updated} updated")
@@ -297,7 +297,7 @@ Add robust error handling to your sync:
 def sync_users_with_error_handling(opts \\ []) do
   config = build_sync_config()
   
-  case AirtableSyncPhoenix.execute_sync(config, opts) do
+  case NCDB2Phx.execute_sync(config, opts) do
     {:ok, %{status: :completed} = result} ->
       notify_sync_success(result)
       {:ok, result}
@@ -425,7 +425,7 @@ Having issues? Check out:
 
 - [Configuration Guide](configuration.md) for advanced settings
 - [Adapter Guide](adapters.md) for custom data sources
-- [GitHub Issues](https://github.com/your-org/airtable_sync_phoenix/issues) for bug reports
-- [GitHub Discussions](https://github.com/your-org/airtable_sync_phoenix/discussions) for questions
+- [GitHub Issues](https://github.com/shotleybuilder/ncdb_2_phx/issues) for bug reports
+- [GitHub Discussions](https://github.com/shotleybuilder/ncdb_2_phx/discussions) for questions
 
-Congratulations! You now have AirtableSyncPhoenix working in your application. 🎉
+Congratulations! You now have NCDB2Phx working in your application. 🎉

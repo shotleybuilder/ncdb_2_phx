@@ -1,10 +1,10 @@
-defmodule AirtableSyncPhoenix.SyncEngine do
+defmodule NCDB2Phx.SyncEngine do
   @moduledoc """
   Generic sync engine with adapter pattern for package-ready architecture.
   
   This module provides a resource-agnostic sync engine that can work with any
   Ash resource and any data source adapter. Designed for future extraction
-  as the core of the `airtable_sync_phoenix` hex package.
+  as the core of the `ncdb_2_phx` hex package.
   
   ## Architecture
   
@@ -18,7 +18,7 @@ defmodule AirtableSyncPhoenix.SyncEngine do
   
       # Configure sync operation
       config = %{
-        source_adapter: AirtableSyncPhoenix.Adapters.AirtableAdapter,
+        source_adapter: NCDB2Phx.Adapters.AirtableAdapter,
         source_config: %{
           api_key: "key123",
           base_id: "app123",
@@ -46,7 +46,7 @@ defmodule AirtableSyncPhoenix.SyncEngine do
       SyncEngine.execute_sync(config, opts)
   """
   
-  alias AirtableSyncPhoenix.Utilities.{
+  alias NCDB2Phx.Utilities.{
     SourceAdapter,
     TargetProcessor,
     ProgressTracker,

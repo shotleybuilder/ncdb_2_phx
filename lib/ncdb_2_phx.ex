@@ -23,9 +23,9 @@ defmodule NCDB2Phx do
         
         resources do
           # Use generic resources directly
-          resource AirtableSyncPhoenix.Resources.SyncSession
-          resource AirtableSyncPhoenix.Resources.SyncBatch
-          resource AirtableSyncPhoenix.Resources.SyncLog
+          resource NCDB2Phx.Resources.SyncSession
+          resource NCDB2Phx.Resources.SyncBatch
+          resource NCDB2Phx.Resources.SyncLog
           
           # Or extend them for your domain
           resource MyApp.Sync.CustomSyncSession
@@ -44,7 +44,7 @@ defmodule NCDB2Phx do
       }
       
       # Execute sync
-      {:ok, result} = AirtableSyncPhoenix.execute_sync(config)
+      {:ok, result} = NCDB2Phx.execute_sync(config)
   
   ## Architecture Components
   
@@ -86,39 +86,39 @@ defmodule NCDB2Phx do
   use Ash.Domain
 
   resources do
-    resource AirtableSyncPhoenix.Resources.SyncSession
-    resource AirtableSyncPhoenix.Resources.SyncBatch  
-    resource AirtableSyncPhoenix.Resources.SyncLog
+    resource NCDB2Phx.Resources.SyncSession
+    resource NCDB2Phx.Resources.SyncBatch  
+    resource NCDB2Phx.Resources.SyncLog
   end
 
   # Domain-level code interface for easy access
   
   def create_sync_session(attrs, opts \\ []) do
-    AirtableSyncPhoenix.Resources.SyncSession.create_session(attrs, opts)
+    NCDB2Phx.Resources.SyncSession.create_session(attrs, opts)
   end
 
   def start_sync_session(attrs, opts \\ []) do
-    AirtableSyncPhoenix.Resources.SyncSession.start_session(attrs, opts)
+    NCDB2Phx.Resources.SyncSession.start_session(attrs, opts)
   end
 
   def get_sync_session(session_id, opts \\ []) do
-    AirtableSyncPhoenix.Resources.SyncSession.get_session(session_id, opts)
+    NCDB2Phx.Resources.SyncSession.get_session(session_id, opts)
   end
 
   def list_active_sessions(opts \\ []) do
-    AirtableSyncPhoenix.Resources.SyncSession.list_active_sessions(opts)
+    NCDB2Phx.Resources.SyncSession.list_active_sessions(opts)
   end
 
   def create_sync_batch(attrs, opts \\ []) do
-    AirtableSyncPhoenix.Resources.SyncBatch.create_batch(attrs, opts)
+    NCDB2Phx.Resources.SyncBatch.create_batch(attrs, opts)
   end
 
   def log_sync_event(attrs, opts \\ []) do
-    AirtableSyncPhoenix.Resources.SyncLog.log_event(attrs, opts)
+    NCDB2Phx.Resources.SyncLog.log_event(attrs, opts)
   end
 
   def log_sync_error(attrs, opts \\ []) do
-    AirtableSyncPhoenix.Resources.SyncLog.log_error(attrs, opts)
+    NCDB2Phx.Resources.SyncLog.log_error(attrs, opts)
   end
 
   # High-level sync operations
@@ -133,7 +133,7 @@ defmodule NCDB2Phx do
   ## Example
   
       config = %{
-        source_adapter: AirtableSyncPhoenix.Adapters.AirtableAdapter,
+        source_adapter: NCDB2Phx.Adapters.AirtableAdapter,
         source_config: %{
           api_key: "key123",
           base_id: "app123", 
@@ -146,36 +146,36 @@ defmodule NCDB2Phx do
         session_config: %{sync_type: :import_cases}
       }
       
-      {:ok, result} = AirtableSyncPhoenix.execute_sync(config, actor: admin_user)
+      {:ok, result} = NCDB2Phx.execute_sync(config, actor: admin_user)
   """
   def execute_sync(config, opts \\ []) do
-    AirtableSyncPhoenix.SyncEngine.execute_sync(config, opts)
+    NCDB2Phx.SyncEngine.execute_sync(config, opts)
   end
 
   def stream_sync_records(config, opts \\ []) do
-    AirtableSyncPhoenix.SyncEngine.stream_and_process(config, opts)
+    NCDB2Phx.SyncEngine.stream_and_process(config, opts)
   end
 
   def get_sync_status(session_id) do
-    AirtableSyncPhoenix.SyncEngine.get_sync_status(session_id)
+    NCDB2Phx.SyncEngine.get_sync_status(session_id)
   end
 
   def cancel_sync(session_id) do
-    AirtableSyncPhoenix.SyncEngine.cancel_sync(session_id)
+    NCDB2Phx.SyncEngine.cancel_sync(session_id)
   end
 
   # Event system operations
 
   def broadcast_sync_event(event_type, event_data, opts \\ []) do
-    AirtableSyncPhoenix.Systems.EventSystem.broadcast_sync_event(event_type, event_data, opts)
+    NCDB2Phx.Systems.EventSystem.broadcast_sync_event(event_type, event_data, opts)
   end
 
   def subscribe_to_sync_events(topic) do
-    AirtableSyncPhoenix.Systems.EventSystem.subscribe(topic)
+    NCDB2Phx.Systems.EventSystem.subscribe(topic)
   end
 
   def stream_sync_events(topic, opts \\ []) do
-    AirtableSyncPhoenix.Systems.EventSystem.stream_events(topic, opts)
+    NCDB2Phx.Systems.EventSystem.stream_events(topic, opts)
   end
 
   # Utility functions for package users
@@ -186,7 +186,7 @@ defmodule NCDB2Phx do
   Returns a test adapter that can be used for development and testing.
   """
   def create_test_adapter(opts \\ []) do
-    AirtableSyncPhoenix.Utilities.SourceAdapter.create_test_adapter(opts)
+    NCDB2Phx.Utilities.SourceAdapter.create_test_adapter(opts)
   end
 
   @doc """
@@ -196,7 +196,7 @@ defmodule NCDB2Phx do
   starting sync operations.
   """
   def validate_sync_config(config, opts \\ []) do
-    AirtableSyncPhoenix.Utilities.ConfigValidator.validate_sync_config(config, opts)
+    NCDB2Phx.Utilities.ConfigValidator.validate_sync_config(config, opts)
   end
 
   @doc """
@@ -252,18 +252,18 @@ defmodule NCDB2Phx do
 
   defp get_session_metrics(session_id, _opts) do
     with {:ok, session} <- get_sync_session(session_id),
-         {:ok, batches} <- AirtableSyncPhoenix.Resources.SyncBatch.list_session_batches(session_id),
-         {:ok, logs} <- AirtableSyncPhoenix.Resources.SyncLog.list_session_logs(session_id) do
+         {:ok, batches} <- NCDB2Phx.Resources.SyncBatch.list_session_batches(session_id),
+         {:ok, logs} <- NCDB2Phx.Resources.SyncLog.list_session_logs(session_id) do
       
       %{
-        session: AirtableSyncPhoenix.Resources.SyncSession.get_session_summary(session),
+        session: NCDB2Phx.Resources.SyncSession.get_session_summary(session),
         batch_summary: %{
           total_batches: length(batches),
           completed_batches: Enum.count(batches, &(&1.status == :completed)),
           failed_batches: Enum.count(batches, &(&1.status == :failed)),
           average_batch_time: calculate_average_batch_time(batches)
         },
-        log_summary: AirtableSyncPhoenix.Resources.SyncLog.get_session_log_summary(session_id),
+        log_summary: NCDB2Phx.Resources.SyncLog.get_session_log_summary(session_id),
         performance_metrics: calculate_performance_metrics(session, batches, logs)
       }
     else
@@ -303,7 +303,7 @@ defmodule NCDB2Phx do
   end
 
   defp calculate_records_per_second(session) do
-    AirtableSyncPhoenix.Resources.SyncSession.get_processing_speed(session)
+    NCDB2Phx.Resources.SyncSession.get_processing_speed(session)
   end
 
   defp calculate_error_rate(session) do

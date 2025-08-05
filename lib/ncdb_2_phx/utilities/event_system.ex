@@ -4,7 +4,7 @@ defmodule EhsEnforcement.Sync.Generic.EventSystem do
   
   This module provides a universal event broadcasting and subscription system
   for sync operations. It's designed to be extracted as part of the 
-  `airtable_sync_phoenix` package with minimal dependencies on the host application.
+  `ncdb_2_phx` package with minimal dependencies on the host application.
   
   ## Features
   

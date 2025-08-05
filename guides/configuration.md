@@ -1,10 +1,10 @@
 # Configuration Guide
 
-This guide covers all configuration options for AirtableSyncPhoenix, from basic setup to advanced performance tuning.
+This guide covers all configuration options for NCDB2Phx, from basic setup to advanced performance tuning.
 
 ## Overview
 
-AirtableSyncPhoenix configuration happens at three levels:
+NCDB2Phx configuration happens at three levels:
 1. **Application Configuration** - Global defaults in config files
 2. **Sync Configuration** - Per-sync operation settings
 3. **Runtime Configuration** - Environment variables and dynamic settings
@@ -17,7 +17,7 @@ Set global defaults in your application configuration:
 
 ```elixir
 # config/config.exs
-config :airtable_sync_phoenix,
+config :ncdb_2_phx,
   # Default processing settings
   default_batch_size: 100,
   default_timeout: 30_000,
@@ -39,21 +39,21 @@ config :airtable_sync_phoenix,
 
 ```elixir
 # config/dev.exs
-config :airtable_sync_phoenix,
+config :ncdb_2_phx,
   default_batch_size: 25,           # Smaller batches for development
   default_timeout: 15_000,          # Shorter timeout for faster feedback
   enable_detailed_logging: true,    # Verbose logging for debugging
   debug_mode: true                  # Additional debug features
 
 # config/test.exs  
-config :airtable_sync_phoenix,
+config :ncdb_2_phx,
   default_batch_size: 5,            # Very small batches for tests
   default_timeout: 5_000,           # Quick timeouts for fast tests
   enable_detailed_logging: false,   # Reduce test noise
   enable_progress_tracking: false   # Skip progress tracking in tests
 
 # config/prod.exs
-config :airtable_sync_phoenix,
+config :ncdb_2_phx,
   default_batch_size: 500,          # Larger batches for efficiency
   default_timeout: 120_000,         # 2 minute timeout for large syncs
   enable_detailed_logging: false,   # Reduce log volume
@@ -69,7 +69,7 @@ Each sync operation accepts a detailed configuration map:
 ```elixir
 config = %{
   # Source configuration
-  source_adapter: AirtableSyncPhoenix.Adapters.AirtableAdapter,
+  source_adapter: NCDB2Phx.Adapters.AirtableAdapter,
   source_config: %{
     api_key: System.get_env("AIRTABLE_API_KEY"),
     base_id: "appXXXXXXXXXXXXXX",
@@ -217,7 +217,7 @@ defmodule MyApp.SyncConfigBuilder do
   
   defp base_config do
     %{
-      source_adapter: AirtableSyncPhoenix.Adapters.AirtableAdapter,
+      source_adapter: NCDB2Phx.Adapters.AirtableAdapter,
       target_resource: MyApp.Accounts.User,
       pubsub_config: %{module: MyApp.PubSub}
     }
@@ -303,7 +303,7 @@ defmodule MyApp.SyncConfig do
   
   defp base_config(:users) do
     %{
-      source_adapter: AirtableSyncPhoenix.Adapters.AirtableAdapter,
+      source_adapter: NCDB2Phx.Adapters.AirtableAdapter,
       target_resource: MyApp.Accounts.User,
       target_config: %{unique_field: :email}
     }
@@ -311,7 +311,7 @@ defmodule MyApp.SyncConfig do
   
   defp base_config(:products) do
     %{
-      source_adapter: AirtableSyncPhoenix.Adapters.AirtableAdapter,
+      source_adapter: NCDB2Phx.Adapters.AirtableAdapter,
       target_resource: MyApp.Catalog.Product,
       target_config: %{unique_field: :sku}
     }
@@ -340,7 +340,7 @@ defmodule MyApp.SyncConfig do
   defp apply_environment_overrides(config, _env), do: config
   
   defp validate_config(config) do
-    case AirtableSyncPhoenix.validate_sync_config(config) do
+    case NCDB2Phx.validate_sync_config(config) do
       :ok -> config
       {:error, errors} -> raise "Invalid sync config: #{inspect(errors)}"
     end
@@ -484,7 +484,7 @@ end
 
 ```elixir
 # config/config.exs
-config :airtable_sync_phoenix,
+config :ncdb_2_phx,
   enable_telemetry: true,
   telemetry_config: %{
     # Metrics to collect
@@ -498,8 +498,8 @@ config :airtable_sync_phoenix,
     
     # Metric destinations
     metric_stores: [
-      {AirtableSyncPhoenix.Telemetry.PrometheusStore, %{port: 9090}},
-      {AirtableSyncPhoenix.Telemetry.DatadogStore, %{api_key: System.get_env("DATADOG_API_KEY")}}
+      {NCDB2Phx.Telemetry.PrometheusStore, %{port: 9090}},
+      {NCDB2Phx.Telemetry.DatadogStore, %{api_key: System.get_env("DATADOG_API_KEY")}}
     ],
     
     # Event sampling
@@ -516,21 +516,21 @@ defmodule MyApp.SyncTelemetry do
     :telemetry.attach_many(
       "sync-telemetry",
       [
-        [:airtable_sync_phoenix, :sync, :start],
-        [:airtable_sync_phoenix, :sync, :stop],
-        [:airtable_sync_phoenix, :sync, :exception],
-        [:airtable_sync_phoenix, :batch, :complete]
+        [:ncdb_2_phx, :sync, :start],
+        [:ncdb_2_phx, :sync, :stop],
+        [:ncdb_2_phx, :sync, :exception],
+        [:ncdb_2_phx, :batch, :complete]
       ],
       &handle_telemetry_event/4,
       %{}
     )
   end
   
-  def handle_telemetry_event([:airtable_sync_phoenix, :sync, :start], measurements, metadata, _config) do
+  def handle_telemetry_event([:ncdb_2_phx, :sync, :start], measurements, metadata, _config) do
     MyApp.Metrics.increment("sync.started", tags: [sync_type: metadata.sync_type])
   end
   
-  def handle_telemetry_event([:airtable_sync_phoenix, :sync, :stop], measurements, metadata, _config) do
+  def handle_telemetry_event([:ncdb_2_phx, :sync, :stop], measurements, metadata, _config) do
     MyApp.Metrics.timing("sync.duration", measurements.duration, tags: [
       sync_type: metadata.sync_type,
       status: metadata.status
@@ -539,7 +539,7 @@ defmodule MyApp.SyncTelemetry do
     MyApp.Metrics.gauge("sync.records_processed", metadata.records_processed)
   end
   
-  def handle_telemetry_event([:airtable_sync_phoenix, :batch, :complete], measurements, metadata, _config) do
+  def handle_telemetry_event([:ncdb_2_phx, :batch, :complete], measurements, metadata, _config) do
     MyApp.Metrics.timing("batch.processing_time", measurements.duration)
     MyApp.Metrics.histogram("batch.size", metadata.batch_size)
   end
@@ -608,7 +608,7 @@ end
 
 ```elixir
 # Good
-config :airtable_sync_phoenix,
+config :ncdb_2_phx,
   default_batch_size: if(Mix.env() == :prod, do: 500, else: 50)
 
 # Better  
@@ -627,15 +627,15 @@ end
 ```elixir
 # Validate at startup
 def application_start do
-  AirtableSyncPhoenix.ConfigValidator.validate_application_config!()
+  NCDB2Phx.ConfigValidator.validate_application_config!()
   # ... rest of startup
 end
 
 # Validate before each sync
 def execute_sync(config, opts) do
   config
-  |> AirtableSyncPhoenix.ConfigValidator.validate_sync_config!()
-  |> AirtableSyncPhoenix.execute_sync(opts)
+  |> NCDB2Phx.ConfigValidator.validate_sync_config!()
+  |> NCDB2Phx.execute_sync(opts)
 end
 ```
 
@@ -735,5 +735,5 @@ For configuration help:
 
 - Check the [Installation Guide](installation.md) for setup issues
 - Review the [Quickstart Guide](quickstart.md) for basic configuration
-- See [GitHub Issues](https://github.com/your-org/airtable_sync_phoenix/issues) for known configuration problems
-- Ask questions in [GitHub Discussions](https://github.com/your-org/airtable_sync_phoenix/discussions)
+- See [GitHub Issues](https://github.com/shotleybuilder/ncdb_2_phx/issues) for known configuration problems
+- Ask questions in [GitHub Discussions](https://github.com/shotleybuilder/ncdb_2_phx/discussions)

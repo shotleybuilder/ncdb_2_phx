@@ -1,10 +1,10 @@
 # Installation Guide
 
-This guide will walk you through installing and setting up AirtableSyncPhoenix in your Phoenix application using Ash Framework.
+This guide will walk you through installing and setting up NCDB2Phx in your Phoenix application using Ash Framework.
 
 ## Prerequisites
 
-Before installing AirtableSyncPhoenix, ensure your application meets these requirements:
+Before installing NCDB2Phx, ensure your application meets these requirements:
 
 - **Elixir**: >= 1.16
 - **Phoenix**: >= 1.7.0
@@ -19,7 +19,7 @@ Your application should already be set up with:
 
 ## Step 1: Add Dependency
 
-Add `airtable_sync_phoenix` to your `mix.exs` dependencies:
+Add `ncdb_2_phx` to your `mix.exs` dependencies:
 
 ```elixir
 def deps do
@@ -30,8 +30,8 @@ def deps do
     {:ash_postgres, "~> 2.0"},
     {:ash_phoenix, "~> 2.0"},
     
-    # Add AirtableSyncPhoenix
-    {:airtable_sync_phoenix, "~> 1.0"}
+    # Add NCDB2Phx
+    {:ncdb_2_phx, "~> 1.0"}
   ]
 end
 ```
@@ -53,9 +53,9 @@ defmodule MyApp.Sync do
   
   resources do
     # Add the sync tracking resources
-    resource AirtableSyncPhoenix.Resources.SyncSession
-    resource AirtableSyncPhoenix.Resources.SyncBatch
-    resource AirtableSyncPhoenix.Resources.SyncLog
+    resource NCDB2Phx.Resources.SyncSession
+    resource NCDB2Phx.Resources.SyncBatch
+    resource NCDB2Phx.Resources.SyncLog
     
     # You can also add your own custom sync resources here
     # resource MyApp.Sync.CustomSyncConfig
@@ -76,9 +76,9 @@ defmodule MyApp.ApplicationDomain do
     resource MyApp.Products.Product
     
     # Add sync resources
-    resource AirtableSyncPhoenix.Resources.SyncSession
-    resource AirtableSyncPhoenix.Resources.SyncBatch
-    resource AirtableSyncPhoenix.Resources.SyncLog
+    resource NCDB2Phx.Resources.SyncSession
+    resource NCDB2Phx.Resources.SyncBatch
+    resource NCDB2Phx.Resources.SyncLog
   end
 end
 ```
@@ -106,7 +106,7 @@ Add basic configuration to your application:
 
 ```elixir
 # config/config.exs
-config :airtable_sync_phoenix,
+config :ncdb_2_phx,
   # Default sync settings
   default_batch_size: 100,
   default_timeout: 30_000,
@@ -127,12 +127,12 @@ config :airtable_sync_phoenix,
 
 ```elixir
 # config/dev.exs
-config :airtable_sync_phoenix,
+config :ncdb_2_phx,
   default_batch_size: 50,      # Smaller batches for dev
   enable_detailed_logging: true
 
 # config/prod.exs
-config :airtable_sync_phoenix,
+config :ncdb_2_phx,
   default_batch_size: 500,     # Larger batches for production
   default_timeout: 60_000,     # Longer timeout
   enable_detailed_logging: false
@@ -159,7 +159,7 @@ Create a simple test to verify everything is working:
 defmodule MyApp.SyncTest do
   def test_installation do
     # Test that sync resources are available
-    case AirtableSyncPhoenix.create_sync_session(%{
+    case NCDB2Phx.create_sync_session(%{
       session_id: "test_#{:crypto.strong_rand_bytes(4) |> Base.encode16()}",
       sync_type: :test,
       status: :pending
@@ -198,7 +198,7 @@ defmodule MyAppWeb.Router do
   use MyAppWeb, :router
   
   # Import the sync routes
-  import AirtableSyncPhoenix.Router
+  import NCDB2Phx.Router
   
   # Your existing routes...
   
@@ -256,13 +256,13 @@ If you encounter PubSub-related errors, verify your PubSub module name in config
 
 ```elixir
 # Verify your PubSub module name
-config :airtable_sync_phoenix,
+config :ncdb_2_phx,
   pubsub_module: MyApp.PubSub  # Should match your app's PubSub module
 ```
 
 ## Next Steps
 
-With AirtableSyncPhoenix installed, you're ready to:
+With NCDB2Phx installed, you're ready to:
 
 1. [Follow the Quickstart Guide](quickstart.md) to set up your first sync
 2. [Create Custom Adapters](adapters.md) for your data sources
@@ -286,5 +286,5 @@ If you encounter issues during installation:
 
 1. Check the [Troubleshooting Section](#troubleshooting) above
 2. Review the [Configuration Guide](configuration.md)
-3. Open an issue on [GitHub](https://github.com/your-org/airtable_sync_phoenix/issues)
-4. Join discussions on [GitHub Discussions](https://github.com/your-org/airtable_sync_phoenix/discussions)
+3. Open an issue on [GitHub](https://github.com/shotleybuilder/ncdb_2_phx/issues)
+4. Join discussions on [GitHub Discussions](https://github.com/shotleybuilder/ncdb_2_phx/discussions)

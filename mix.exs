@@ -123,32 +123,32 @@ defmodule NCDB2Phx.MixProject do
       ],
       groups_for_modules: [
         "Core Components": [
-          AirtableSyncPhoenix,
-          AirtableSyncPhoenix.SyncEngine
+          NCDB2Phx,
+          NCDB2Phx.SyncEngine
         ],
         "Utilities": [
-          AirtableSyncPhoenix.Utilities.ConfigValidator,
-          AirtableSyncPhoenix.Utilities.SourceAdapter,
-          AirtableSyncPhoenix.Utilities.TargetProcessor,
-          AirtableSyncPhoenix.Utilities.ProgressTracker,
-          AirtableSyncPhoenix.Utilities.ErrorHandler,
-          AirtableSyncPhoenix.Utilities.RecordTransformer,
-          AirtableSyncPhoenix.Utilities.RecordValidator,
-          AirtableSyncPhoenix.Utilities.Validations
+          NCDB2Phx.Utilities.ConfigValidator,
+          NCDB2Phx.Utilities.SourceAdapter,
+          NCDB2Phx.Utilities.TargetProcessor,
+          NCDB2Phx.Utilities.ProgressTracker,
+          NCDB2Phx.Utilities.ErrorHandler,
+          NCDB2Phx.Utilities.RecordTransformer,
+          NCDB2Phx.Utilities.RecordValidator,
+          NCDB2Phx.Utilities.Validations
         ],
         "Resources": [
-          AirtableSyncPhoenix.Resources.SyncSession,
-          AirtableSyncPhoenix.Resources.SyncBatch,
-          AirtableSyncPhoenix.Resources.SyncLog
+          NCDB2Phx.Resources.SyncSession,
+          NCDB2Phx.Resources.SyncBatch,
+          NCDB2Phx.Resources.SyncLog
         ],
         "Adapters": [
-          AirtableSyncPhoenix.Adapters.AirtableAdapter
+          NCDB2Phx.Adapters.AirtableAdapter
         ],
         "Systems": [
-          AirtableSyncPhoenix.Systems.EventSystem
+          NCDB2Phx.Systems.EventSystem
         ],
         "Components": [
-          AirtableSyncPhoenix.Components.SyncComponents
+          NCDB2Phx.Components.SyncComponents
         ]
       ]
     ]
@@ -164,7 +164,7 @@ defmodule NCDB2Phx.MixProject do
       
       # Maintainers and contributors
       maintainers: [
-        "AirtableSyncPhoenix Team <contact@airtable-sync-phoenix.dev>"
+        "NCDB2Phx Team <contact@shotleybuilder.com>"
       ],
       
       # Package links

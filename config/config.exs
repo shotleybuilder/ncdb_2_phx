@@ -7,7 +7,7 @@
 # General application configuration
 import Config
 
-config :airtable_sync_phoenix,
+config :ncdb_2_phx,
   generators: [timestamp_type: :utc_datetime]
 
 # Configures Elixir's Logger

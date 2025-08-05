@@ -4,7 +4,7 @@ defmodule EhsEnforcement.Sync.Generic.ProgressTracker do
   
   This module provides a universal progress tracking interface that works
   with any Phoenix application's PubSub system and any session storage
-  mechanism. It's designed to be extracted as part of the `airtable_sync_phoenix`
+  mechanism. It's designed to be extracted as part of the `ncdb_2_phx`
   package with minimal dependencies on the host application.
   
   ## Features

@@ -1,6 +1,6 @@
-defmodule AirtableSyncPhoenix.Utilities.SourceAdapter do
+defmodule NCDB2Phx.Utilities.SourceAdapter do
   @moduledoc """
-  Behaviour and utilities for pluggable source adapters in the AirtableSyncPhoenix package.
+  Behaviour and utilities for pluggable source adapters in the NCDB2Phx package.
   
   This module defines the interface that all source adapters must implement
   to work with the generic sync engine. Source adapters are responsible for
@@ -25,7 +25,7 @@ defmodule AirtableSyncPhoenix.Utilities.SourceAdapter do
   Here's a complete example of a CSV file adapter:
   
       defmodule MyApp.Adapters.CsvAdapter do
-        @behaviour AirtableSyncPhoenix.Utilities.SourceAdapter
+        @behaviour NCDB2Phx.Utilities.SourceAdapter
         
         @impl true
         def initialize(config) do
@@ -109,7 +109,7 @@ defmodule AirtableSyncPhoenix.Utilities.SourceAdapter do
   Here's an example adapter for REST APIs:
   
       defmodule MyApp.Adapters.ApiAdapter do
-        @behaviour AirtableSyncPhoenix.Utilities.SourceAdapter
+        @behaviour NCDB2Phx.Utilities.SourceAdapter
         
         @impl true
         def initialize(config) do
@@ -177,8 +177,8 @@ defmodule AirtableSyncPhoenix.Utilities.SourceAdapter do
   
   The package includes these production-ready adapters:
   
-  - `AirtableSyncPhoenix.Adapters.AirtableAdapter` - Full-featured Airtable integration
-  - `AirtableSyncPhoenix.Adapters.TestAdapter` - For testing and development
+  - `NCDB2Phx.Adapters.AirtableAdapter` - Full-featured Airtable integration
+  - `NCDB2Phx.Adapters.TestAdapter` - For testing and development
   
   ## Error Handling
   
@@ -206,7 +206,7 @@ defmodule AirtableSyncPhoenix.Utilities.SourceAdapter do
   
       defmodule MyApp.Adapters.CsvAdapterTest do
         use ExUnit.Case
-        alias AirtableSyncPhoenix.Utilities.SourceAdapter
+        alias NCDB2Phx.Utilities.SourceAdapter
         
         test "csv adapter implements required behaviour" do
           adapter = MyApp.Adapters.CsvAdapter
@@ -436,7 +436,7 @@ defmodule AirtableSyncPhoenix.Utilities.SourceAdapter do
   
   ## Example
   
-      {:ok, test_adapter} = AirtableSyncPhoenix.Utilities.SourceAdapter.create_test_adapter(
+      {:ok, test_adapter} = NCDB2Phx.Utilities.SourceAdapter.create_test_adapter(
         record_count: 50,
         record_template: fn index ->
           %{
@@ -471,7 +471,7 @@ defmodule AirtableSyncPhoenix.Utilities.SourceAdapter do
     module_name = String.to_atom("Elixir.TestAdapter#{:crypto.strong_rand_bytes(8) |> Base.encode16()}")
     
     module_code = quote do
-      @behaviour AirtableSyncPhoenix.Utilities.SourceAdapter
+      @behaviour NCDB2Phx.Utilities.SourceAdapter
       
       def initialize(config) do
         {:ok, Map.merge(%{

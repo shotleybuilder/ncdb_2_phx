@@ -1,12 +1,12 @@
-# AirtableSyncPhoenix
+# NCDB2Phx
 
-[![Hex.pm](https://img.shields.io/hexpm/v/airtable_sync_phoenix.svg)](https://hex.pm/packages/airtable_sync_phoenix)
-[![Documentation](https://img.shields.io/badge/docs-hexdocs-blue.svg)](https://hexdocs.pm/airtable_sync_phoenix)
-[![License](https://img.shields.io/hexpm/l/airtable_sync_phoenix.svg)](LICENSE)
+[![Hex.pm](https://img.shields.io/hexpm/v/ncdb_2_phx.svg)](https://hex.pm/packages/ncdb_2_phx)
+[![Documentation](https://img.shields.io/badge/docs-hexdocs-blue.svg)](https://hexdocs.pm/ncdb_2_phx)
+[![License](https://img.shields.io/hexpm/l/ncdb_2_phx.svg)](LICENSE)
 
-**A comprehensive, production-ready sync engine for Phoenix applications using Ash Framework**
+**A comprehensive, production-ready import engine for Phoenix applications using Ash Framework**
 
-AirtableSyncPhoenix is a generic sync package that enables Phoenix applications to sync data from external sources (starting with Airtable) into Ash resources with real-time progress tracking, comprehensive error handling, and a complete LiveView admin interface.
+NCDB2Phx is a generic import package that enables Phoenix applications to import data from no-code databases (Airtable, Baserow, Notion) and other sources (CSV, APIs, databases) into Ash resources with real-time progress tracking, comprehensive error handling, and a complete LiveView admin interface.
 
 ## 🚀 Features
 
@@ -21,12 +21,12 @@ AirtableSyncPhoenix is a generic sync package that enables Phoenix applications 
 
 ## 📦 Installation
 
-Add `airtable_sync_phoenix` to your list of dependencies in `mix.exs`:
+Add `ncdb_2_phx` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:airtable_sync_phoenix, "~> 1.0"},
+    {:ncdb_2_phx, "~> 1.0"},
     {:ash, "~> 3.0"},
     {:ash_postgres, "~> 2.0"},
     {:ash_phoenix, "~> 2.0"}
@@ -52,9 +52,9 @@ defmodule MyApp.Sync do
   
   resources do
     # Use the package's generic sync resources
-    resource AirtableSyncPhoenix.Resources.SyncSession
-    resource AirtableSyncPhoenix.Resources.SyncBatch  
-    resource AirtableSyncPhoenix.Resources.SyncLog
+    resource NCDB2Phx.Resources.SyncSession
+    resource NCDB2Phx.Resources.SyncBatch  
+    resource NCDB2Phx.Resources.SyncLog
   end
 end
 ```
@@ -64,7 +64,7 @@ end
 ```elixir
 config = %{
   # Source configuration
-  source_adapter: AirtableSyncPhoenix.Adapters.AirtableAdapter,
+  source_adapter: NCDB2Phx.Adapters.AirtableAdapter,
   source_config: %{
     api_key: System.get_env("AIRTABLE_API_KEY"),
     base_id: "appXXXXXXXXXXXXXX",
@@ -105,10 +105,10 @@ config = %{
 
 ```elixir
 # Simple sync execution
-{:ok, result} = AirtableSyncPhoenix.execute_sync(config, actor: current_user)
+{:ok, result} = NCDB2Phx.execute_sync(config, actor: current_user)
 
 # Stream records for custom processing
-AirtableSyncPhoenix.stream_sync_records(config, actor: current_user)
+NCDB2Phx.stream_sync_records(config, actor: current_user)
 |> Stream.each(fn
   {:created, record} -> IO.puts("Created: #{record.id}")
   {:updated, record} -> IO.puts("Updated: #{record.id}")  
@@ -124,12 +124,12 @@ Add sync management routes to your router:
 
 ```elixir
 # router.ex
-import AirtableSyncPhoenix.Router
+import NCDB2Phx.Router
 
 scope "/admin", MyAppWeb.Admin do
   pipe_through [:browser, :admin_required]
   
-  airtable_sync_routes "/sync"
+  ncdb_sync_routes "/sync"
 end
 ```
 
@@ -171,7 +171,7 @@ This provides a complete admin interface at `/admin/sync` with:
 ```elixir
 # Configure for Airtable sync
 config = %{
-  source_adapter: AirtableSyncPhoenix.Adapters.AirtableAdapter,
+  source_adapter: NCDB2Phx.Adapters.AirtableAdapter,
   source_config: %{
     api_key: "keyXXXXXXXXXXXXXX",
     base_id: "appXXXXXXXXXXXXXX", 
@@ -184,10 +184,10 @@ config = %{
 }
 
 # Execute sync with progress tracking
-{:ok, session} = AirtableSyncPhoenix.execute_sync(config, actor: admin_user)
+{:ok, session} = NCDB2Phx.execute_sync(config, actor: admin_user)
 
 # Get sync status
-status = AirtableSyncPhoenix.get_sync_status(session.session_id)
+status = NCDB2Phx.get_sync_status(session.session_id)
 # => %{status: :completed, progress: 100.0, records_processed: 450}
 ```
 
@@ -195,7 +195,7 @@ status = AirtableSyncPhoenix.get_sync_status(session.session_id)
 
 ```elixir
 defmodule MyApp.Adapters.CSVAdapter do
-  @behaviour AirtableSyncPhoenix.Utilities.SourceAdapter
+  @behaviour NCDB2Phx.Utilities.SourceAdapter
   
   def stream_records(config, _opts) do
     config.file_path
@@ -229,7 +229,7 @@ defmodule MyAppWeb.SyncLive do
   
   def mount(_params, _session, socket) do
     # Subscribe to sync progress events
-    AirtableSyncPhoenix.subscribe_to_sync_events("sync_progress")
+    NCDB2Phx.subscribe_to_sync_events("sync_progress")
     
     {:ok, assign(socket, progress: 0, status: :idle)}
   end
@@ -241,7 +241,7 @@ defmodule MyAppWeb.SyncLive do
   def handle_event("start_sync", _params, socket) do
     # Start sync operation
     config = build_sync_config()
-    Task.start(fn -> AirtableSyncPhoenix.execute_sync(config) end)
+    Task.start(fn -> NCDB2Phx.execute_sync(config) end)
     
     {:noreply, assign(socket, status: :starting)}
   end
@@ -265,7 +265,7 @@ config = %{
 }
 
 # Execute with error handling
-case AirtableSyncPhoenix.execute_sync(config) do
+case NCDB2Phx.execute_sync(config) do
   {:ok, %{status: :completed} = result} ->
     IO.puts("Sync completed successfully: #{result.records_processed} records")
     
@@ -284,7 +284,7 @@ end
 
 ```elixir
 # Get comprehensive sync metrics
-{:ok, metrics} = AirtableSyncPhoenix.get_sync_metrics(session_id)
+{:ok, metrics} = NCDB2Phx.get_sync_metrics(session_id)
 
 # Metrics include:
 # %{
@@ -325,7 +325,7 @@ The admin interface is built with reusable components that can be customized:
 # Custom sync page with your branding
 defmodule MyAppWeb.CustomSyncLive do
   use MyAppWeb, :live_view
-  import AirtableSyncPhoenix.Components.SyncComponents
+  import NCDB2Phx.Components.SyncComponents
   
   def render(assigns) do
     ~H"""
@@ -356,9 +356,9 @@ export AIRTABLE_DEFAULT_BATCH_SIZE="100"
 
 ```elixir
 # config/config.exs
-config :airtable_sync_phoenix,
+config :ncdb_2_phx,
   # Default adapter configuration
-  default_adapter: AirtableSyncPhoenix.Adapters.AirtableAdapter,
+  default_adapter: NCDB2Phx.Adapters.AirtableAdapter,
   default_batch_size: 100,
   default_timeout: 30_000,
   
@@ -384,12 +384,12 @@ config :airtable_sync_phoenix,
 
 ```elixir
 # config/dev.exs
-config :airtable_sync_phoenix,
+config :ncdb_2_phx,
   default_batch_size: 50,  # Smaller batches for development
   enable_detailed_logging: true
   
 # config/prod.exs  
-config :airtable_sync_phoenix,
+config :ncdb_2_phx,
   default_batch_size: 500,  # Larger batches for production
   enable_detailed_logging: false,
   timeout: 60_000
@@ -408,7 +408,7 @@ defmodule MyApp.SyncTest do
   test "sync creates records from test data" do
     # Use test adapter with predefined data
     config = %{
-      source_adapter: AirtableSyncPhoenix.create_test_adapter(),
+      source_adapter: NCDB2Phx.create_test_adapter(),
       source_config: %{
         test_data: [
           %{name: "John Doe", email: "john@example.com"},
@@ -420,7 +420,7 @@ defmodule MyApp.SyncTest do
       processing_config: %{batch_size: 10}
     }
     
-    {:ok, result} = AirtableSyncPhoenix.execute_sync(config)
+    {:ok, result} = NCDB2Phx.execute_sync(config)
     
     assert result.status == :completed
     assert result.records_processed == 2
@@ -434,7 +434,7 @@ end
 ```elixir
 # Mock Airtable responses for testing
 defmodule MyApp.MockAirtableAdapter do
-  @behaviour AirtableSyncPhoenix.Utilities.SourceAdapter
+  @behaviour NCDB2Phx.Utilities.SourceAdapter
   
   def stream_records(_config, _opts) do
     [
@@ -456,7 +456,7 @@ Create adapters for any data source by implementing the `SourceAdapter` behaviou
 
 ```elixir
 defmodule MyApp.Adapters.APIAdapter do
-  @behaviour AirtableSyncPhoenix.Utilities.SourceAdapter
+  @behaviour NCDB2Phx.Utilities.SourceAdapter
   
   def stream_records(config, opts) do
     config.api_url
@@ -486,7 +486,7 @@ Transform data during sync with custom transformers:
 
 ```elixir
 defmodule MyApp.Transformers.CustomerTransformer do
-  @behaviour AirtableSyncPhoenix.Utilities.RecordTransformer
+  @behaviour NCDB2Phx.Utilities.RecordTransformer
   
   def transform_record(source_record, target_resource, _config) do
     {:ok, %{
@@ -520,7 +520,7 @@ Implement custom error handling logic:
 
 ```elixir
 defmodule MyApp.ErrorHandlers.SlackNotifier do
-  @behaviour AirtableSyncPhoenix.Utilities.ErrorHandler
+  @behaviour NCDB2Phx.Utilities.ErrorHandler
   
   def handle_error(error, context, _config) do
     case error_severity(error) do
@@ -551,7 +551,7 @@ end
 ```elixir
 # Stream records with custom batch processing
 config
-|> AirtableSyncPhoenix.stream_sync_records(actor: user)
+|> NCDB2Phx.stream_sync_records(actor: user)
 |> Stream.chunk_every(50)  # Custom batch size
 |> Stream.with_index()
 |> Stream.each(fn {batch, batch_number} ->
@@ -589,7 +589,7 @@ resources_config = [
 
 results = Enum.map(resources_config, fn resource_config ->
   config = Map.merge(base_config, resource_config)
-  AirtableSyncPhoenix.execute_sync(config, actor: admin_user)
+  NCDB2Phx.execute_sync(config, actor: admin_user)
 end)
 ```
 
@@ -636,8 +636,8 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 ### Development Setup
 
 ```bash
-git clone https://github.com/your-org/airtable_sync_phoenix.git
-cd airtable_sync_phoenix
+git clone https://github.com/shotleybuilder/ncdb_2_phx.git
+cd ncdb_2_phx
 mix deps.get
 mix ash.setup
 mix test
@@ -653,7 +653,7 @@ mix test
 mix coveralls
 
 # Run specific test files
-mix test test/airtable_sync_phoenix/sync_engine_test.exs
+mix test test/ncdb_2_phx/sync_engine_test.exs
 ```
 
 ## 📖 Documentation
@@ -662,13 +662,13 @@ mix test test/airtable_sync_phoenix/sync_engine_test.exs
 - [Quick Start Guide](guides/quickstart.md)
 - [Adapter Development](guides/adapters.md)
 - [Configuration Reference](guides/configuration.md)
-- [API Documentation](https://hexdocs.pm/airtable_sync_phoenix)
+- [API Documentation](https://hexdocs.pm/ncdb_2_phx)
 
 ## 🆘 Support
 
-- **Documentation**: [HexDocs](https://hexdocs.pm/airtable_sync_phoenix)
-- **Issues**: [GitHub Issues](https://github.com/your-org/airtable_sync_phoenix/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-org/airtable_sync_phoenix/discussions)
+- **Documentation**: [HexDocs](https://hexdocs.pm/ncdb_2_phx)
+- **Issues**: [GitHub Issues](https://github.com/shotleybuilder/ncdb_2_phx/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/shotleybuilder/ncdb_2_phx/discussions)
 
 ## 📄 License
 

@@ -4,7 +4,7 @@ import Config
 config :logger, level: :warning
 
 # In test we don't send emails.
-config :airtable_sync_phoenix, AirtableSyncPhoenix.Mailer, adapter: Swoosh.Adapters.Test
+config :ncdb_2_phx, NCDB2Phx.Mailer, adapter: Swoosh.Adapters.Test
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false

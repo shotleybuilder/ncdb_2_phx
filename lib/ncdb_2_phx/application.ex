@@ -1,4 +1,4 @@
-defmodule AirtableSyncPhoenix.Application do
+defmodule NCDB2Phx.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
@@ -9,16 +9,16 @@ defmodule AirtableSyncPhoenix.Application do
   def start(_type, _args) do
     children = [
       # Start the Telemetry supervisor
-      AirtableSyncPhoenixWeb.Telemetry,
+      NCDB2PhxWeb.Telemetry,
       # Start the PubSub system
-      {Phoenix.PubSub, name: AirtableSyncPhoenix.PubSub},
+      {Phoenix.PubSub, name: NCDB2Phx.PubSub},
       # Start the Finch HTTP client for making external requests
-      {Finch, name: AirtableSyncPhoenix.Finch}
+      {Finch, name: NCDB2Phx.Finch}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: AirtableSyncPhoenix.Supervisor]
+    opts = [strategy: :one_for_one, name: NCDB2Phx.Supervisor]
     Supervisor.start_link(children, opts)
   end
 end

@@ -23,14 +23,14 @@ if config_env() == :prod do
   host = System.get_env("PHX_HOST") || "example.com"
   port = String.to_integer(System.get_env("PORT") || "4000")
 
-  config :airtable_sync_phoenix, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
+  config :ncdb_2_phx, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key
   # to your endpoint configuration:
   #
-  #     config :airtable_sync_phoenix, AirtableSyncPhoenixWeb.Endpoint,
+  #     config :ncdb_2_phx, NCDB2PhxWeb.Endpoint,
   #       https: [
   #         ...,
   #         port: 443,
@@ -52,7 +52,7 @@ if config_env() == :prod do
   # We also recommend setting `force_ssl` in your config/prod.exs,
   # ensuring no data is ever sent via http, always redirecting to https:
   #
-  #     config :airtable_sync_phoenix, AirtableSyncPhoenixWeb.Endpoint,
+  #     config :ncdb_2_phx, NCDB2PhxWeb.Endpoint,
   #       force_ssl: [hsts: true]
   #
   # Check `Plug.SSL` for all available options in `force_ssl`.
