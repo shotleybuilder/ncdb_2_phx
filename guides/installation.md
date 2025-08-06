@@ -42,7 +42,17 @@ Then fetch the dependency:
 mix deps.get
 ```
 
-## Step 2: Add Resources to Your Domain
+## Step 2: Configure Repository
+
+NCDB2Phx resources need to know which repository to use. Add this configuration to your application:
+
+```elixir
+# config/config.exs
+config :ncdb_2_phx,
+  repo: MyApp.Repo  # Replace with your application's repo module
+```
+
+## Step 3: Add Resources to Your Domain
 
 You'll need to add the sync tracking resources to one of your Ash domains. Create a new domain or add to an existing one:
 
@@ -83,7 +93,7 @@ defmodule MyApp.ApplicationDomain do
 end
 ```
 
-## Step 3: Generate and Run Migrations
+## Step 4: Generate and Run Migrations
 
 The sync resources require database tables. Generate the migrations:
 
@@ -100,7 +110,7 @@ You should see new migration files created for:
 - `sync_batches` table  
 - `sync_logs` table
 
-## Step 4: Add NCDB2Phx Supervisor (Optional)
+## Step 5: Add NCDB2Phx Supervisor (Optional)
 
 NCDB2Phx provides an optional supervisor for its core services. Add it to your application's supervision tree if you need PubSub and HTTP client services:
 
@@ -134,7 +144,7 @@ end
 
 **Note**: If you skip this step, you'll need to ensure PubSub is configured for real-time progress tracking.
 
-## Step 5: Configuration
+## Step 6: Configuration
 
 Add basic configuration to your application:
 
@@ -172,7 +182,7 @@ config :ncdb_2_phx,
   enable_detailed_logging: false
 ```
 
-## Step 6: Environment Variables
+## Step 7: Environment Variables
 
 Set up environment variables for your data sources:
 
@@ -184,7 +194,7 @@ export AIRTABLE_BASE_ID="appXXXXXXXXXXXXXX"
 # For production, set these in your deployment environment
 ```
 
-## Step 7: Verify Installation
+## Step 8: Verify Installation
 
 Create a simple test to verify everything is working:
 
@@ -222,7 +232,7 @@ iex> MyApp.SyncTest.test_installation()
 
 You should see: `✅ Installation successful! Created test session: test_XXXXXXXX`
 
-## Step 8: Add Admin Interface (Recommended)
+## Step 9: Add Admin Interface (Recommended)
 
 NCDB2Phx provides a comprehensive web-based admin interface for managing and monitoring sync operations. Add it to your router:
 
@@ -405,6 +415,7 @@ With NCDB2Phx installed, you're ready to:
 
 - [ ] Added dependency to `mix.exs` (~> 0.2)
 - [ ] Ran `mix deps.get`
+- [ ] **Required:** Configured repo with `config :ncdb_2_phx, repo: MyApp.Repo`
 - [ ] Added sync resources to Ash domain
 - [ ] Generated and ran migrations with `mix ash.codegen --check` and `mix ash.migrate`
 - [ ] Added basic configuration

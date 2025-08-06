@@ -66,9 +66,7 @@ defmodule NCDB2Phx.Resources.SyncSession do
 
   postgres do
     table "airtable_sync_sessions"
-    if Mix.env() in [:test, :dev] do
-      repo NCDB2Phx.TestRepo
-    end
+    repo Application.compile_env(:ncdb_2_phx, :repo, NCDB2Phx.TestRepo)
   end
 
   attributes do

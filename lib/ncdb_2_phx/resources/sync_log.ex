@@ -51,9 +51,7 @@ defmodule NCDB2Phx.Resources.SyncLog do
 
   postgres do
     table "generic_sync_logs"
-    if Mix.env() in [:test, :dev] do
-      repo NCDB2Phx.TestRepo
-    end
+    repo Application.compile_env(:ncdb_2_phx, :repo, NCDB2Phx.TestRepo)
     
     custom_indexes do
       index [:session_id]

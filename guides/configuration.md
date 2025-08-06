@@ -18,6 +18,9 @@ Set global defaults in your application configuration:
 ```elixir
 # config/config.exs
 config :ncdb_2_phx,
+  # Required: Repository configuration
+  repo: MyApp.Repo,
+  
   # Default processing settings
   default_batch_size: 100,
   default_timeout: 30_000,

@@ -14,6 +14,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Package metadata preparation for hex.pm publication
 
+## [0.2.4] - 2025-08-06
+
+### Changed
+- **Repository Configuration**: Updated sync resources to use standardized repo configuration pattern
+  - `sync_session.ex`, `sync_batch.ex`, `sync_log.ex` now use `Application.compile_env(:ncdb_2_phx, :repo, NCDB2Phx.TestRepo)`
+  - **Breaking Change**: Production deployments now require `config :ncdb_2_phx, repo: MyApp.Repo`
+  - Maintains backward compatibility for test/dev environments (defaults to `NCDB2Phx.TestRepo`)
+
+### Added
+- **Documentation Updates**: Updated installation and configuration guides
+  - Added Step 2 in installation guide for required repo configuration
+  - Updated configuration guide to highlight repo configuration as required
+  - Added repo configuration to installation checklist
+
+### Fixed
+- **Production Deployment**: Resolved issue where sync resources had no repo configuration in production
+- **Host Application Integration**: Eliminated need for manual resource configuration in host applications
+
+### Migration Notes
+**Important**: This release requires host applications to add repo configuration for production use:
+
+```elixir
+# config/config.exs  
+config :ncdb_2_phx,
+  repo: MyApp.Repo
+```
+
+**Development Impact**: No breaking changes for existing test/dev workflows. The package continues to use `NCDB2Phx.TestRepo` as the default fallback for test and development environments.
+
+**Benefits**: 
+- Standardized Elixir package pattern (same as Phoenix, Oban, etc.)
+- Compile-time safety with `Application.compile_env`
+- Simplified host application integration
+- Production-ready configuration with minimal coupling
+
 ## [0.2.3] - 2025-08-06
 
 ### Added
