@@ -90,7 +90,7 @@ defmodule NCDB2Phx.Live.LogLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="log-index" phx-hook="LogViewer" data-auto-scroll={@auto_scroll}>
+    <div id="log-viewer" class="log-index" phx-hook="LogViewer" data-auto-scroll={@auto_scroll}>
       <.page_header />
       
       <.log_controls 

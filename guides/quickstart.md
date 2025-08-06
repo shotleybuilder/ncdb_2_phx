@@ -132,7 +132,53 @@ iex> MyApp.Syncs.UserSync.sync_users_from_airtable()
 # 📊 Stats: 25 processed, 20 created, 5 updated
 ```
 
-## Step 5: Add Field Mapping (If Needed)
+## Step 5: Access the Admin Interface (Recommended)
+
+If you've installed the admin interface during setup, you can now monitor and manage your sync operations through the web interface.
+
+### Access the Dashboard
+
+Visit `http://localhost:4000/admin/sync` (adjust the path based on your router configuration) to access:
+
+- **Dashboard**: Overview of all sync operations with real-time status
+- **Sessions**: Detailed view of your sync sessions with progress tracking
+- **Monitor**: Live monitoring with performance metrics and charts
+- **Logs**: Comprehensive log viewer with filtering and search
+
+### Monitor Your Sync
+
+After running the sync in Step 4, you can:
+
+1. **View Session Details**: Go to `/admin/sync/sessions` to see your completed sync
+2. **Check Performance**: View processing speed, error rates, and timing metrics
+3. **Review Logs**: Check `/admin/sync/logs` for detailed operation logs
+4. **Analyze Batches**: See batch-by-batch processing details
+
+### Start Syncs from the Web Interface
+
+Instead of running syncs programmatically, you can create and manage them through the web interface:
+
+1. **Create New Sync**: Visit `/admin/sync/sessions/new`
+2. **Select Source**: Choose your Airtable adapter and configure connection
+3. **Choose Target**: Select your User resource and configure mapping
+4. **Set Options**: Configure batch size, limits, and error handling
+5. **Run Sync**: Start the sync and monitor progress in real-time
+
+### API Access
+
+The admin interface also provides API endpoints for programmatic access:
+
+```bash
+# Check sync progress
+curl -H "Authorization: Bearer $TOKEN" \
+  "http://localhost:4000/admin/sync/api/sessions/SESSION_ID/progress"
+
+# Get sync logs
+curl -H "Authorization: Bearer $TOKEN" \
+  "http://localhost:4000/admin/sync/api/sessions/SESSION_ID/logs"
+```
+
+## Step 6: Add Field Mapping (If Needed)
 
 If your Airtable fields don't match your Ash resource attributes exactly, add field mapping:
 
@@ -158,7 +204,7 @@ processing_config: %{
 }
 ```
 
-## Step 6: Monitor Sync Progress (Optional)
+## Step 7: Monitor Sync Progress (Optional)
 
 Add real-time monitoring to see sync progress:
 
@@ -241,7 +287,7 @@ Add the route:
 live "/sync-monitor", SyncMonitorLive
 ```
 
-## Step 7: Handle Common Data Types
+## Step 8: Handle Common Data Types
 
 ### Dates and Times
 
@@ -289,7 +335,7 @@ category_id: case airtable_record.data["Category"] do
 end
 ```
 
-## Step 8: Error Handling
+## Step 9: Error Handling
 
 Add robust error handling to your sync:
 
@@ -333,7 +379,7 @@ defp schedule_retry_later do
 end
 ```
 
-## Step 9: Automate Syncs (Optional)
+## Step 10: Automate Syncs (Optional)
 
 Set up automated syncing using Oban or similar:
 

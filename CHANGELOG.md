@@ -9,11 +9,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Initial public release preparation
-- Comprehensive documentation and guides
 - Example applications and usage patterns
 
 ### Changed
 - Package metadata preparation for hex.pm publication
+
+## [0.2.1] - 2025-08-06
+
+### Fixed
+- **Compilation Issues**: Fixed all compilation errors preventing package build
+  - **Layout Components**: Fixed `~p` sigil issues in `NCDB2Phx.Layouts` by using static asset paths
+  - **Form Components**: Added `NCDB2Phx.Components` module with basic form components (`input`, `button`, `label`, etc.)
+  - **LiveView Components**: Resolved function conflicts between imported components and local functions
+  - **Phoenix LiveView**: Fixed `phx-hook` elements requiring `id` attributes
+  - **Variable Access**: Corrected `@assigns` vs `assigns` usage in function components
+
+### Added
+- **Component Library**: New `NCDB2Phx.Components` module providing basic UI components
+  - Form components (input, button, label, field wrappers)
+  - Status and progress components (status_badge, progress_bar)
+  - Layout components (card, table)
+  - HTML helper re-exports for compatibility
+
+### Documentation
+- **🎉 MAJOR: Complete Documentation Overhaul**
+  - **New Admin Interface Guide**: Comprehensive 695-line guide covering complete admin interface setup and usage
+  - **Fixed Installation Guide**: Corrected router macro from `airtable_sync_routes` to `ncdb_sync_routes`
+  - **Updated Quickstart Guide**: Added Step 5 for admin interface access and monitoring workflow
+  - **Enhanced Configuration Guide**: Added router configuration, admin interface options, LiveView sessions, and PubSub settings
+  - **Improved Adapter Guide**: Added monitoring capabilities and telemetry integration examples
+
+### Technical Details
+- **Build System**: Project now compiles successfully without errors
+- **Component Architecture**: Clean separation between package components and host app components
+- **Import Strategy**: Selective imports to prevent function name conflicts
+- **Asset Management**: Static asset paths for better compatibility across host applications
+
+### Migration Notes
+This is a bug fix release that resolves compilation issues in v0.2.0. All new documentation accurately reflects the v0.2.0 admin interface features. No breaking changes to existing functionality.
 
 ## [0.2.0] - 2025-08-06
 

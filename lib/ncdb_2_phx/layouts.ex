@@ -13,8 +13,8 @@ defmodule NCDB2Phx.Layouts do
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title><%= assigns[:page_title] || "Sync Administration" %></title>
-        <link phx-track-static rel="stylesheet" href={~p"/assets/ncdb_sync.css"} />
-        <script defer phx-track-static type="text/javascript" src={~p"/assets/ncdb_sync.js"}></script>
+        <link phx-track-static rel="stylesheet" href="/assets/ncdb_sync.css" />
+        <script defer phx-track-static type="text/javascript" src="/assets/ncdb_sync.js"></script>
       </head>
       <body>
         <div id="sync-admin-root">

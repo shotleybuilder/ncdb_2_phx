@@ -458,7 +458,7 @@ defmodule NCDB2Phx.Live.MonitorLive.Session do
   end
 
   defp resource_meter(assigns) do
-    percentage = (@assigns.value / @assigns.max) * 100
+    percentage = (assigns.value / assigns.max) * 100
     meter_class = cond do
       percentage >= 90 -> "meter-danger"
       percentage >= 75 -> "meter-warning"

@@ -6,6 +6,9 @@ defmodule NCDB2Phx.Live.BaseSyncLive do
   defmacro __using__(opts) do
     quote do
       use Phoenix.LiveView, unquote(opts)
+      
+      # Import common components, excluding conflicting functions
+      import NCDB2Phx.Components, except: [status_badge: 1, progress_bar: 1]
 
       @impl true
       def mount(params, session, socket) do

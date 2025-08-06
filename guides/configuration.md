@@ -35,6 +35,147 @@ config :ncdb_2_phx,
   enable_admin_interface: true
 ```
 
+### Router Configuration
+
+Configure the admin interface router with various customization options:
+
+```elixir
+# lib/my_app_web/router.ex
+defmodule MyAppWeb.Router do
+  use MyAppWeb, :router
+  
+  import NCDB2Phx.Router
+  
+  # Basic admin interface
+  scope "/admin" do
+    pipe_through [:browser, :admin]
+    ncdb_sync_routes "/sync"
+  end
+  
+  # Advanced configuration with all options
+  scope "/admin" do 
+    pipe_through [:browser, :admin]
+    ncdb_sync_routes "/sync",
+      # Route customization
+      as: :admin_sync,                    # Route helper prefix (default: :ncdb_sync)
+      live_session_name: :admin_session,  # LiveView session name (default: :ncdb_sync_session)
+      
+      # Layout customization
+      root_layout: {MyAppWeb.Layouts, :admin},  # Use custom admin layout
+      
+      # Session arguments (available in all LiveViews)
+      session_args: %{
+        "current_user_id" => "user_context",
+        "user_permissions" => "sync_permissions",
+        "organization_id" => "current_org_id"
+      },
+      
+      # Private router data (for custom middleware)
+      private: %{
+        authentication_required: true,
+        audit_logging: true,
+        feature_flags: ["admin_interface", "sync_monitoring"]
+      }
+  end
+end
+```
+
+### Admin Interface Configuration
+
+Control admin interface features and behavior:
+
+```elixir
+# config/config.exs
+config :ncdb_2_phx,
+  admin_interface: %{
+    # Authentication
+    require_authentication: true,
+    session_timeout: 3600,              # 1 hour session timeout
+    
+    # UI customization
+    theme: :default,                     # :default, :dark, :light, or custom module
+    brand_name: "My Company Sync Admin",
+    logo_url: "/assets/images/logo.png",
+    favicon_url: "/assets/images/favicon.ico",
+    
+    # Feature toggles
+    enable_session_creation: true,       # Allow creating new syncs via UI
+    enable_session_editing: true,        # Allow editing sync configurations
+    enable_session_cancellation: true,   # Allow canceling running syncs
+    enable_batch_analysis: true,         # Show detailed batch analysis
+    enable_log_streaming: true,          # Real-time log streaming
+    enable_system_monitoring: true,      # System health monitoring
+    enable_configuration_ui: true,       # Configuration management UI
+    
+    # Performance settings
+    default_page_size: 25,               # Records per page in lists
+    max_page_size: 100,                  # Maximum allowed page size
+    real_time_update_interval: 1000,     # LiveView update interval (ms)
+    log_buffer_size: 1000,              # Log entries to buffer for streaming
+    
+    # Data retention
+    session_retention_days: 90,          # Keep session data for 90 days
+    log_retention_days: 30,             # Keep detailed logs for 30 days
+    
+    # Export options
+    enable_csv_export: true,            # Enable CSV exports
+    enable_json_export: true,           # Enable JSON exports
+    max_export_records: 10000,          # Limit exported records
+    
+    # API configuration
+    api_rate_limit: 100,                # API requests per minute per user
+    api_timeout: 30_000,                # API request timeout (ms)
+    enable_api_docs: true               # Enable built-in API documentation
+  }
+```
+
+### LiveView Session Configuration
+
+Configure LiveView sessions for the admin interface:
+
+```elixir
+# lib/my_app_web/router.ex
+scope "/admin" do
+  pipe_through [:browser, :admin]
+  
+  ncdb_sync_routes "/sync",
+    # LiveView session configuration
+    session_args: %{
+      # Authentication context
+      "current_user_id" => fn conn -> 
+        get_session(conn, :current_user_id) 
+      end,
+      "user_permissions" => fn conn ->
+        conn.assigns[:current_user].permissions
+      end,
+      
+      # Organization/tenant context
+      "current_tenant_id" => fn conn ->
+        conn.assigns[:current_tenant]&.id
+      end,
+      
+      # Feature flags
+      "feature_flags" => fn conn ->
+        get_user_feature_flags(conn.assigns[:current_user])
+      end,
+      
+      # Custom theme/branding
+      "theme_config" => fn conn ->
+        get_tenant_theme_config(conn.assigns[:current_tenant])
+      end,
+      
+      # Audit trail
+      "session_metadata" => fn conn ->
+        %{
+          ip_address: get_peer_data(conn).address |> Tuple.to_list() |> Enum.join("."),
+          user_agent: get_req_header(conn, "user-agent") |> List.first(),
+          created_at: DateTime.utc_now()
+        }
+      end
+    }
+end
+```
+
 ### Environment-Specific Configuration
 
 ```elixir
@@ -140,7 +281,15 @@ config = %{
     error_topic: "user_sync_errors",    # Error notifications topic
     completion_topic: "user_sync_complete", # Completion notifications
     enable_detailed_events: true,       # Send detailed event data
-    event_throttle_ms: 100              # Throttle rapid events
+    event_throttle_ms: 100,             # Throttle rapid events
+    
+    # Admin interface real-time updates
+    admin_topic: "sync_admin_updates",  # Admin interface updates
+    broadcast_to_admin: true,           # Send events to admin interface
+    admin_event_types: [                # Events to broadcast to admin
+      :sync_started, :sync_completed, :sync_failed,
+      :batch_completed, :progress_update, :error_occurred
+    ]
   },
   
   # Session configuration

@@ -503,6 +503,27 @@ end
 
 ## Adapter Testing
 
+### Testing with Admin Interface
+
+The NCDB2Phx admin interface provides excellent tools for testing and debugging your custom adapters:
+
+**Connection Testing:**
+- Visit `/admin/sync/config` to test adapter connections
+- Real-time connection validation with detailed error messages
+- Connection performance metrics and timing analysis
+
+**Live Testing:**
+- Create test sync sessions using your adapter via `/admin/sync/sessions/new`
+- Monitor adapter performance in real-time during test runs
+- Analyze batch-by-batch processing to identify bottlenecks
+
+**Debugging Support:**
+- Live log streaming shows adapter-level debug information
+- Progress tracking helps identify where adapters may be stalling
+- Error analysis provides detailed context for adapter failures
+
+## Adapter Testing
+
 ### Basic Adapter Test Template
 
 ```elixir
@@ -739,6 +760,38 @@ def stream_records(state) do
   Stream.map(all_records, &normalize_record/1)
 end
 ```
+
+### 6. Monitoring and Observability
+
+Design adapters with monitoring in mind:
+
+```elixir
+# Add telemetry events for monitoring
+def fetch_page(state, page) do
+  start_time = System.monotonic_time()
+  
+  result = case make_api_request(state, page) do
+    {:ok, response} -> 
+      :telemetry.execute([:my_adapter, :page_fetch, :success], %{
+        duration: System.monotonic_time() - start_time,
+        records: length(response.data),
+        page: page
+      })
+      {:ok, response}
+      
+    {:error, reason} ->
+      :telemetry.execute([:my_adapter, :page_fetch, :error], %{
+        duration: System.monotonic_time() - start_time,
+        page: page
+      }, %{reason: reason})
+      {:error, reason}
+  end
+  
+  result
+end
+```
+
+The admin interface will automatically display these metrics for real-time monitoring and analysis.
 
 ## Packaging Your Adapter
 

@@ -31,7 +31,7 @@ def deps do
     {:ash_phoenix, "~> 2.0"},
     
     # Add NCDB2Phx
-    {:ncdb_2_phx, "~> 1.0"}
+    {:ncdb_2_phx, "~> 0.2"}
   ]
 end
 ```
@@ -222,33 +222,131 @@ iex> MyApp.SyncTest.test_installation()
 
 You should see: `✅ Installation successful! Created test session: test_XXXXXXXX`
 
-## Step 8: Optional - Add Admin Routes
+## Step 8: Add Admin Interface (Recommended)
 
-If you want the built-in admin interface, add routes to your router:
+NCDB2Phx provides a comprehensive web-based admin interface for managing and monitoring sync operations. Add it to your router:
 
 ```elixir
 # lib/my_app_web/router.ex
 defmodule MyAppWeb.Router do
   use MyAppWeb, :router
   
-  # Import the sync routes
+  # Import NCDB2Phx router helpers
   import NCDB2Phx.Router
   
-  # Your existing routes...
+  # Your existing pipelines...
+  pipeline :admin do
+    plug :authenticate_admin  # Add your admin authentication
+    plug :require_sync_permissions  # Optional: granular permissions
+  end
   
+  # Mount the complete admin interface
   scope "/admin", MyAppWeb.Admin do
-    pipe_through [:browser, :admin_required]  # Add your admin authentication
+    pipe_through [:browser, :admin]
     
-    # Add sync management routes
-    airtable_sync_routes "/sync"
+    # Single line = complete sync admin interface!
+    ncdb_sync_routes "/sync"
   end
 end
 ```
 
-This will create routes at:
-- `/admin/sync` - Main sync dashboard
-- `/admin/sync/history` - Sync history
-- `/admin/sync/config` - Sync configuration
+### Admin Interface Features
+
+This creates a complete admin interface at `/admin/sync` with:
+
+**Dashboard & Monitoring:**
+- `/admin/sync` - Real-time dashboard with system overview
+- `/admin/sync/monitor` - Live monitoring with performance metrics
+- `/admin/sync/monitor/:session_id` - Session-specific monitoring
+
+**Session Management:**
+- `/admin/sync/sessions` - Comprehensive session management
+- `/admin/sync/sessions/new` - Create and configure new syncs
+- `/admin/sync/sessions/:id` - Detailed session view with real-time progress
+- `/admin/sync/sessions/:id/edit` - Edit session configuration
+
+**Analysis & Debugging:**
+- `/admin/sync/batches` - Batch-level performance analysis
+- `/admin/sync/batches/:id` - Detailed batch analysis with error breakdown
+- `/admin/sync/logs` - Comprehensive log viewer with search and filtering
+- `/admin/sync/logs/:session_id` - Session-specific logs with timeline view
+
+**Configuration:**
+- `/admin/sync/config` - System configuration management
+
+**API Endpoints:**
+- `/admin/sync/api/sessions/:id/progress` - Real-time progress data
+- `/admin/sync/api/sessions/:id/logs` - Session logs with pagination
+- `/admin/sync/api/sessions/:id/cancel` - Cancel running sessions
+- `/admin/sync/api/sessions/:id/retry` - Retry failed sessions
+
+### Advanced Router Configuration
+
+For more control over the admin interface:
+
+```elixir
+# Advanced configuration with all options
+ncdb_sync_routes "/sync",
+  # Customize route helpers
+  as: :admin_sync,
+  
+  # Custom LiveView session
+  live_session_name: :admin_sync_session,
+  
+  # Use your admin layout
+  root_layout: {MyAppWeb.Layouts, :admin},
+  
+  # Pass session context
+  session_args: %{
+    "user_role" => "admin",
+    "organization_id" => "current_org_id"
+  },
+  
+  # Private router data
+  private: %{
+    authentication_required: true,
+    audit_logging: true
+  }
+```
+
+### Authentication Integration
+
+The admin interface integrates with your existing authentication:
+
+#### Simple Role-Based Access
+```elixir
+pipeline :sync_admin do
+  plug MyApp.Auth.RequireAdmin
+end
+```
+
+#### Granular Permission Control
+```elixir
+pipeline :sync_admin do
+  plug MyApp.Auth.RequireUser
+  plug MyApp.Auth.RequirePermissions, [:sync_admin, :sync_monitor]
+  plug MyApp.Auth.AssignSyncPermissions
+end
+```
+
+#### Custom Authentication Logic
+```elixir
+defmodule MyApp.SyncAuth do
+  def require_sync_access(conn, _opts) do
+    case get_current_user(conn) do
+      %{role: role} when role in [:admin, :sync_manager] ->
+        assign(conn, :sync_permissions, get_user_sync_permissions(conn))
+      _ ->
+        conn 
+        |> put_flash(:error, "Access denied") 
+        |> redirect(to: "/")
+    end
+  end
+end
+
+# In your router pipeline
+plug MyApp.SyncAuth, :require_sync_access
+```
 
 ## Troubleshooting
 
@@ -299,19 +397,21 @@ config :ncdb_2_phx,
 With NCDB2Phx installed, you're ready to:
 
 1. [Follow the Quickstart Guide](quickstart.md) to set up your first sync
-2. [Create Custom Adapters](adapters.md) for your data sources
-3. [Configure Advanced Settings](configuration.md)
+2. [Explore the Admin Interface](admin-interface.md) for web-based sync management
+3. [Create Custom Adapters](adapters.md) for your data sources  
+4. [Configure Advanced Settings](configuration.md)
 
 ## Installation Checklist
 
-- [ ] Added dependency to `mix.exs`
+- [ ] Added dependency to `mix.exs` (~> 0.2)
 - [ ] Ran `mix deps.get`
 - [ ] Added sync resources to Ash domain
 - [ ] Generated and ran migrations with `mix ash.codegen --check` and `mix ash.migrate`
 - [ ] Added basic configuration
 - [ ] Set environment variables
 - [ ] Verified installation with test
-- [ ] (Optional) Added admin routes
+- [ ] **Recommended:** Added admin interface with `ncdb_sync_routes`
+- [ ] **Optional:** Configured authentication and permissions for admin interface
 - [ ] Ready to create first sync!
 
 ## Support
