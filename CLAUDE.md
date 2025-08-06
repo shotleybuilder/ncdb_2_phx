@@ -14,14 +14,11 @@ The codebase is a **package/library** designed to be integrated into other Phoen
 ```bash
 # Initial setup
 mix deps.get
-mix ash.setup
-mix assets.setup
-mix assets.build
 
 # Database operations
-mix ash.create        # Create database
-mix ash.migrate       # Run migrations with codegen check
-mix ash.reset         # Drop and recreate database
+mix ecto.create       # Create database
+mix ash.codegen       # Generate migrations from resources (after creating or modifying Ash code)
+# DO NOT use mix ecto.migrate in Ash projects - migrations are handled by ash.codegen
 ```
 
 ### Testing

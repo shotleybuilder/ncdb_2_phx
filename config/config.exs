@@ -8,6 +8,7 @@
 import Config
 
 config :ncdb_2_phx,
+  ecto_repos: [NCDB2Phx.Repo],
   generators: [timestamp_type: :utc_datetime]
 
 # Configures Elixir's Logger

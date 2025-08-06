@@ -1,5 +1,15 @@
 import Config
 
+# Configure the database
+config :ncdb_2_phx, NCDB2Phx.Repo,
+  username: System.get_env("DATABASE_USER", "postgres"),
+  password: System.get_env("DATABASE_PASSWORD", "postgres"),
+  hostname: System.get_env("DATABASE_HOST", "localhost"),
+  database: "ncdb_2_phx_test#{System.get_env("MIX_TEST_PARTITION")}",
+  port: System.get_env("DATABASE_PORT", "5432") |> String.to_integer(),
+  pool: Ecto.Adapters.SQL.Sandbox,
+  pool_size: System.schedulers_online() * 2
+
 # Print only warnings and errors during test
 config :logger, level: :warning
 

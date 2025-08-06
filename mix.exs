@@ -79,6 +79,9 @@ defmodule NCDB2Phx.MixProject do
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       
+      # Email
+      {:swoosh, "~> 1.16"},
+      
       # Development and testing tools
       {:floki, ">= 0.30.0", only: :test},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false},
@@ -91,11 +94,8 @@ defmodule NCDB2Phx.MixProject do
   # Aliases are shortcuts or tasks specific to the current project.
   defp aliases do
     [
-      setup: ["deps.get", "ash.setup", "assets.setup", "assets.build"],
-      "ash.setup": ["ash.create", "ash.migrate", "run priv/repo/seeds.exs"],
-      "ash.reset": ["ash.drop", "ash.setup"],
-      "ash.migrate": ["ash.codegen --check", "ash.migrate"],
-      test: ["ash.create --quiet", "ash.migrate --quiet", "test"],
+      setup: ["deps.get", "ecto.create", "ash.codegen", "run priv/repo/seeds.exs"],
+      test: ["ecto.create --quiet", "test"],
       "assets.setup": ["cmd --cd assets npm install"],
       "assets.build": ["cmd --cd assets npm run build"],
       "assets.deploy": ["cmd --cd assets npm run build", "phx.digest"]
