@@ -14,6 +14,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Package metadata preparation for hex.pm publication
 
+## [0.2.2] - 2025-08-06
+
+### Added
+- **Email Integration**: Added Swoosh dependency for email functionality
+- **Database Schema**: Added PostgreSQL extensions support (uuid-ossp, citext)
+
+### Changed
+- **Mix Task Aliases**: Fixed non-existent Mix task aliases
+  - **Before**: `ash.create`, `ash.migrate` (non-existent commands)
+  - **After**: `ecto.create`, `ash.codegen` (correct Ash workflow)
+- **Development Workflow**: Updated CLAUDE.md with correct Ash Framework commands
+
+### Fixed
+- **Mix Configuration**: Corrected aliases that used non-existent `ash.create` and `ash.migrate` commands
+- **Dependency Issues**: Resolved Swoosh configuration without dependency
+
+### Technical Details
+- **Ash Workflow**: Proper `ecto.create` → `ash.codegen` workflow (migrations auto-applied)
+- **Database Setup**: PostgreSQL extensions configured for UUID and case-insensitive text support
+
+### Migration Notes
+This release fixes critical development workflow issues with Mix task aliases. The package now follows correct Ash Framework patterns for database operations.
+
+**Breaking Change**: Mix aliases behavior changed:
+- `mix setup` now runs `ecto.create` + `ash.codegen` instead of non-existent commands
+- `mix test` now uses `ecto.create` instead of `ash.create`
+
+### Known Issues
+- **Package Architecture**: Repository components temporarily added to main package (will be moved to test-only in next release)
+
 ## [0.2.1] - 2025-08-06
 
 ### Fixed
