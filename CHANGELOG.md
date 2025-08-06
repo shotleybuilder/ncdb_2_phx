@@ -15,6 +15,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Package metadata preparation for hex.pm publication
 
+## [0.2.0] - 2025-08-06
+
+### Added
+- **🎉 MAJOR: Router Helpers & Admin Interface**
+  - **`NCDB2Phx.Router`**: Single macro `ncdb_sync_routes` mounts complete admin interface
+  - **Comprehensive LiveView Suite**: Dashboard, sessions, monitoring, batches, logs, configuration
+  - **Real-time Monitoring**: Live system monitoring with real-time metrics and alerts
+  - **API Endpoints**: RESTful API for session management (progress, logs, cancel, retry)
+  - **Plug-and-Play Integration**: Single macro call mounts entire admin interface
+  - **Customizable Options**: Route prefixes, layouts, session args, authentication integration
+
+- **LiveView Components**:
+  - **Dashboard** (`NCDB2Phx.Live.DashboardLive`): System overview with real-time metrics
+  - **Session Management**: Full CRUD operations (Index, Show, New, Edit)
+  - **Live Monitoring** (`NCDB2Phx.Live.MonitorLive`): Real-time system and session monitoring
+  - **Batch Management**: Detailed batch tracking and analysis
+  - **Log Management**: Comprehensive log viewing with filtering and search
+  - **Configuration**: Multi-tab configuration management interface
+
+- **Architecture Enhancements**:
+  - **Base LiveView** (`NCDB2Phx.Live.BaseSyncLive`): Common PubSub functionality
+  - **Mount Hooks** (`NCDB2Phx.Live.Hooks.AssignDefaults`): Session defaults and authentication
+  - **Default Layouts** (`NCDB2Phx.Layouts`): Responsive admin interface layouts
+  - **Error Handling** (`NCDB2Phx.API.FallbackController`): Comprehensive API error handling
+
+- **Integration Features**:
+  - **Authentication Ready**: Designed for host app authentication pipelines
+  - **PubSub Integration**: Real-time updates throughout the interface
+  - **Mobile Responsive**: Modern component architecture
+  - **Host App Customization**: Full layout and styling customization support
+
+### Technical Implementation
+- **Single Macro Integration**: `ncdb_sync_routes "/sync"` provides complete admin interface
+- **Real-time Architecture**: PubSub-based live updates across all components
+- **RESTful API**: Comprehensive API endpoints for programmatic access
+- **Ash Framework Integration**: Native integration with Ash resources and conventions
+- **Phoenix LiveView**: Modern real-time web interface with server-side rendering
+
+### Migration Notes
+This is a major feature addition that provides a complete administration interface for NCDB2Phx. Existing functionality remains fully backward compatible.
+
+**New Integration Pattern**:
+```elixir
+# In your router
+import NCDB2Phx.Router
+
+scope "/admin" do
+  pipe_through [:browser, :admin_required]
+  ncdb_sync_routes "/sync"
+end
+```
+
+This single macro call provides:
+- Dashboard with system overview
+- Complete session management
+- Real-time monitoring and alerts  
+- Batch-level tracking and analysis
+- Comprehensive log management
+- Configuration interface
+- RESTful API endpoints
+
 ## [0.1.1] - 2025-08-06
 
 ### Fixed
