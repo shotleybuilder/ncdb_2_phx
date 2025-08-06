@@ -15,6 +15,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Package metadata preparation for hex.pm publication
 
+## [0.1.1] - 2025-08-06
+
+### Fixed
+- **Architecture Fix**: Converted from auto-starting Phoenix application to optional library supervisor
+- **Missing Telemetry**: Removed non-existent `NCDB2PhxWeb.Telemetry` module that caused startup failures
+- **Library Pattern**: Fixed `mix.exs` to follow proper library architecture (removed `mod:` configuration)
+
+### Changed
+- **Application Module**: Converted `NCDB2Phx.Application` from Application callback to optional Supervisor
+- **Host Integration**: Host applications now control which NCDB2Phx components to start
+- **Documentation**: Updated installation guide to show optional supervisor integration
+
+### Technical Details
+- Removed automatic application startup that was incompatible with library usage
+- Converted to pure library pattern where host applications control what starts
+- Added clear documentation for both "batteries included" and "à la carte" integration approaches
+- Fixed architectural issue where library was trying to start Phoenix web components
+
 ## [1.0.0] - 2025-08-05
 
 ### Added

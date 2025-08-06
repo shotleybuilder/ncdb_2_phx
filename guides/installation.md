@@ -100,7 +100,41 @@ You should see new migration files created for:
 - `sync_batches` table  
 - `sync_logs` table
 
-## Step 4: Configuration
+## Step 4: Add NCDB2Phx Supervisor (Optional)
+
+NCDB2Phx provides an optional supervisor for its core services. Add it to your application's supervision tree if you need PubSub and HTTP client services:
+
+```elixir
+# lib/my_app/application.ex
+defmodule MyApp.Application do
+  use Application
+
+  def start(_type, _args) do
+    children = [
+      # Your existing children...
+      MyAppWeb.Telemetry,
+      {DNSCluster, query: Application.get_env(:my_app, :dns_cluster_query) || :ignore},
+      {Phoenix.PubSub, name: MyApp.PubSub},
+      
+      # Add NCDB2Phx supervisor (optional)
+      NCDB2Phx.Application,
+      
+      # Or add services individually if you prefer more control:
+      # {Phoenix.PubSub, name: NCDB2Phx.PubSub},
+      # {Finch, name: NCDB2Phx.Finch},
+      
+      MyAppWeb.Endpoint
+    ]
+
+    opts = [strategy: :one_for_one, name: MyApp.Supervisor]
+    Supervisor.start_link(children, opts)
+  end
+end
+```
+
+**Note**: If you skip this step, you'll need to ensure PubSub is configured for real-time progress tracking.
+
+## Step 5: Configuration
 
 Add basic configuration to your application:
 
@@ -138,7 +172,7 @@ config :ncdb_2_phx,
   enable_detailed_logging: false
 ```
 
-## Step 5: Environment Variables
+## Step 6: Environment Variables
 
 Set up environment variables for your data sources:
 
@@ -150,7 +184,7 @@ export AIRTABLE_BASE_ID="appXXXXXXXXXXXXXX"
 # For production, set these in your deployment environment
 ```
 
-## Step 6: Verify Installation
+## Step 7: Verify Installation
 
 Create a simple test to verify everything is working:
 
@@ -188,7 +222,7 @@ iex> MyApp.SyncTest.test_installation()
 
 You should see: `✅ Installation successful! Created test session: test_XXXXXXXX`
 
-## Step 7: Optional - Add Admin Routes
+## Step 8: Optional - Add Admin Routes
 
 If you want the built-in admin interface, add routes to your router:
 
