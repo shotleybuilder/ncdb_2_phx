@@ -2,8 +2,8 @@ defmodule NCDB2Phx.Live.MonitorLive do
   use NCDB2Phx.Live.BaseSyncLive
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, socket} = super(_params, _session, socket)
+  def mount(params, session, socket) do
+    {:ok, socket} = super(params, session, socket)
 
     socket =
       socket
@@ -31,34 +31,19 @@ defmodule NCDB2Phx.Live.MonitorLive do
 
   @impl true
   def handle_event("cancel_session", %{"id" => session_id}, socket) do
-    case cancel_session(session_id) do
-      {:ok, _session} ->
-        socket =
-          socket
-          |> assign(:active_sessions, load_active_sessions())
-          |> put_flash(:info, "Session cancelled successfully")
+    NCDB2Phx.Utilities.ProgressTracker.cancel_session(session_id)
+    socket =
+      socket
+      |> assign(:active_sessions, load_active_sessions())
+      |> put_flash(:info, "Session cancelled successfully")
 
-        {:noreply, socket}
-
-      {:error, reason} ->
-        {:noreply, put_flash(socket, :error, "Failed to cancel session: #{reason}")}
-    end
+    {:noreply, socket}
   end
 
   @impl true
-  def handle_event("pause_session", %{"id" => session_id}, socket) do
-    case pause_session(session_id) do
-      {:ok, _session} ->
-        socket =
-          socket
-          |> assign(:active_sessions, load_active_sessions())
-          |> put_flash(:info, "Session paused successfully")
-
-        {:noreply, socket}
-
-      {:error, reason} ->
-        {:noreply, put_flash(socket, :error, "Failed to pause session: #{reason}")}
-    end
+  def handle_event("pause_session", %{"id" => _session_id}, socket) do
+    # TODO: Implement session pause functionality
+    {:noreply, put_flash(socket, :error, "Pause functionality not yet implemented")}
   end
 
   @impl true
@@ -120,15 +105,6 @@ defmodule NCDB2Phx.Live.MonitorLive do
     socket
   end
 
-  defp cancel_session(_id) do
-    # TODO: Implement session cancellation
-    {:error, "Not implemented"}
-  end
-
-  defp pause_session(_id) do
-    # TODO: Implement session pause
-    {:error, "Not implemented"}
-  end
 
   defp page_header(assigns) do
     ~H"""

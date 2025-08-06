@@ -8,7 +8,7 @@ defmodule NCDB2Phx.DataCase do
 
   using do
     quote do
-      alias NCDB2Phx.Repo
+      alias NCDB2Phx.TestRepo, as: Repo
 
       import Ecto
       import Ecto.Changeset
@@ -29,7 +29,7 @@ defmodule NCDB2Phx.DataCase do
   Sets up the sandbox based on the test tags.
   """
   def setup_sandbox(tags) do
-    pid = Ecto.Adapters.SQL.Sandbox.start_owner!(NCDB2Phx.Repo, shared: not tags[:async])
+    pid = Ecto.Adapters.SQL.Sandbox.start_owner!(NCDB2Phx.TestRepo, shared: not tags[:async])
     on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
   end
 

@@ -5,7 +5,6 @@ defmodule NCDB2Phx.Components do
   """
   use Phoenix.Component
   
-  import Phoenix.HTML, only: [raw: 1]
 
   @doc """
   Basic input component with support for various input types.
@@ -115,7 +114,7 @@ defmodule NCDB2Phx.Components do
   """
   def status_badge(assigns) do
     assigns = assign_new(assigns, :status, fn -> "unknown" end)
-    assigns = assign_new(assigns, :class, fn -> "status-badge status-#{@status}" end)
+    assigns = assign_new(assigns, :class, fn -> "status-badge status-#{assigns.status}" end)
     
     ~H"""
     <span class={@class}>
@@ -132,7 +131,7 @@ defmodule NCDB2Phx.Components do
     assigns = assign_new(assigns, :max, fn -> 100 end)
     assigns = assign_new(assigns, :class, fn -> "progress-bar" end)
     
-    percentage = if @max > 0, do: (@value / @max) * 100, else: 0
+    percentage = if assigns.max > 0, do: (assigns.value / assigns.max) * 100, else: 0
     
     assigns = assign(assigns, :percentage, percentage)
     

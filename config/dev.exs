@@ -1,7 +1,11 @@
 import Config
 
-# Configure the database
-config :ncdb_2_phx, NCDB2Phx.Repo,
+# Configure dev-only repo for development (optional)
+config :ncdb_2_phx,
+  ecto_repos: [NCDB2Phx.DevRepo]
+
+# Configure the development database
+config :ncdb_2_phx, NCDB2Phx.DevRepo,
   username: System.get_env("DATABASE_USER", "postgres"),
   password: System.get_env("DATABASE_PASSWORD", "postgres"),
   hostname: System.get_env("DATABASE_HOST", "localhost"),

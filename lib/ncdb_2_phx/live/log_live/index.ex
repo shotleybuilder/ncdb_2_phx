@@ -2,8 +2,8 @@ defmodule NCDB2Phx.Live.LogLive.Index do
   use NCDB2Phx.Live.BaseSyncLive
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, socket} = super(_params, _session, socket)
+  def mount(params, session, socket) do
+    {:ok, socket} = super(params, session, socket)
 
     socket =
       socket
@@ -57,18 +57,8 @@ defmodule NCDB2Phx.Live.LogLive.Index do
 
   @impl true
   def handle_event("clear_logs", _params, socket) do
-    case clear_logs(socket.assigns.filters) do
-      {:ok, _result} ->
-        socket =
-          socket
-          |> assign(:logs, list_logs_with_filters(socket.assigns.filters))
-          |> put_flash(:info, "Logs cleared successfully")
-
-        {:noreply, socket}
-
-      {:error, reason} ->
-        {:noreply, put_flash(socket, :error, "Failed to clear logs: #{reason}")}
-    end
+    {:error, reason} = clear_logs(socket.assigns.filters)
+    {:noreply, put_flash(socket, :error, "Failed to clear logs: #{reason}")}
   end
 
   @impl true
@@ -133,7 +123,7 @@ defmodule NCDB2Phx.Live.LogLive.Index do
     }
   end
 
-  defp atomize_param(value, default) when is_binary(value), do: String.to_atom(value)
+  defp atomize_param(value, _default) when is_binary(value), do: String.to_atom(value)
   defp atomize_param(_value, default), do: default
 
   defp build_filter_path(filters) do

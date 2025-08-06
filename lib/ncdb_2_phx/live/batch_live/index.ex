@@ -2,8 +2,8 @@ defmodule NCDB2Phx.Live.BatchLive.Index do
   use NCDB2Phx.Live.BaseSyncLive
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, socket} = super(_params, _session, socket)
+  def mount(params, session, socket) do
+    {:ok, socket} = super(params, session, socket)
 
     socket =
       socket
@@ -64,19 +64,8 @@ defmodule NCDB2Phx.Live.BatchLive.Index do
 
   @impl true
   def handle_event("bulk_retry", _params, socket) do
-    case retry_batches(socket.assigns.selected_batches) do
-      {:ok, _result} ->
-        socket =
-          socket
-          |> assign(:selected_batches, [])
-          |> assign(:batches, list_batches_with_filters_and_sort(socket.assigns))
-          |> put_flash(:info, "Selected batches queued for retry")
-
-        {:noreply, socket}
-
-      {:error, reason} ->
-        {:noreply, put_flash(socket, :error, "Failed to retry batches: #{reason}")}
-    end
+    {:error, reason} = retry_batches(socket.assigns.selected_batches)
+    {:noreply, put_flash(socket, :error, "Failed to retry batches: #{reason}")}
   end
 
   @impl true
@@ -139,7 +128,7 @@ defmodule NCDB2Phx.Live.BatchLive.Index do
     }
   end
 
-  defp atomize_param(value, default) when is_binary(value), do: String.to_atom(value)
+  defp atomize_param(value, _default) when is_binary(value), do: String.to_atom(value)
   defp atomize_param(_value, default), do: default
 
   defp build_filter_path(filters, assigns) do

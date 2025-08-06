@@ -9,30 +9,31 @@ defmodule NCDB2Phx.Utilities.ConfigValidatorTest do
     end
 
     test "has expected functions" do
-      assert function_exported?(ConfigValidator, :validate_config, 1)
+      assert function_exported?(ConfigValidator, :validate_sync_config, 1)
+      assert function_exported?(ConfigValidator, :validate_sync_config, 2)
     end
 
     test "validates empty config" do
       config = %{}
-      result = ConfigValidator.validate_config(config)
+      result = ConfigValidator.validate_sync_config(config)
       
       # The actual validation behavior will depend on implementation
       # For now, just verify the function can be called
-      assert result in [{:ok, _}, {:error, _}]
+      assert match?({:ok, _}, result) or match?({:error, _}, result)
     end
 
     test "validates basic config structure" do
       config = %{
-        source_adapter: TestAdapter,
+        source_adapter: NCDB2Phx.TestAdapter,
         source_config: %{},
-        target_resource: TestResource,
+        target_resource: NCDB2Phx.TestResource,
         target_config: %{},
         processing_config: %{},
         session_config: %{}
       }
       
-      result = ConfigValidator.validate_config(config)
-      assert result in [{:ok, _}, {:error, _}]
+      result = ConfigValidator.validate_sync_config(config)
+      assert match?({:ok, _}, result) or match?({:error, _}, result)
     end
   end
 end

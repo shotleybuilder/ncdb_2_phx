@@ -26,8 +26,6 @@ defmodule NCDB2Phx.Application do
   @impl true
   def init(_opts) do
     children = [
-      # Database repository (for development/testing)
-      NCDB2Phx.Repo,
       # PubSub system for real-time progress tracking
       {Phoenix.PubSub, name: NCDB2Phx.PubSub},
       # HTTP client for external API requests

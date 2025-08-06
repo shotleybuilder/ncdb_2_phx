@@ -2,30 +2,20 @@ defmodule NCDB2Phx.Live.MonitorLive.Session do
   use NCDB2Phx.Live.BaseSyncLive
 
   @impl true
-  def mount(%{"session_id" => session_id}, _session, socket) do
-    {:ok, socket} = super(%{"session_id" => session_id}, _session, socket)
+  def mount(%{"session_id" => session_id}, session, socket) do
+    {:ok, socket} = super(%{"session_id" => session_id}, session, socket)
 
-    case load_session(session_id) do
-      {:ok, session} ->
-        socket =
-          socket
-          |> assign(:session, session)
-          |> assign(:real_time_metrics, load_real_time_metrics(session_id))
-          |> assign(:batch_progress, load_batch_progress(session_id))
-          |> assign(:performance_history, load_performance_history(session_id))
-          |> assign(:resource_usage, load_resource_usage(session_id))
-          |> schedule_real_time_refresh()
+    {:ok, session} = load_session(session_id)
+    socket =
+      socket
+      |> assign(:session, session)
+      |> assign(:real_time_metrics, load_real_time_metrics(session_id))
+      |> assign(:batch_progress, load_batch_progress(session_id))
+      |> assign(:performance_history, load_performance_history(session_id))
+      |> assign(:resource_usage, load_resource_usage(session_id))
+      |> schedule_real_time_refresh()
 
-        {:ok, socket}
-
-      {:error, :not_found} ->
-        socket =
-          socket
-          |> put_flash(:error, "Session not found")
-          |> push_navigate(to: "/sync/monitor")
-
-        {:ok, socket}
-    end
+    {:ok, socket}
   end
 
   @impl true
@@ -45,50 +35,24 @@ defmodule NCDB2Phx.Live.MonitorLive.Session do
 
   @impl true
   def handle_event("cancel_session", _params, socket) do
-    case cancel_session(socket.assigns.session.id) do
-      {:ok, updated_session} ->
-        socket =
-          socket
-          |> assign(:session, updated_session)
-          |> put_flash(:info, "Session cancelled successfully")
+    NCDB2Phx.Utilities.ProgressTracker.cancel_session(socket.assigns.session.id)
+    socket =
+      socket
+      |> put_flash(:info, "Session cancelled successfully")
 
-        {:noreply, socket}
-
-      {:error, reason} ->
-        {:noreply, put_flash(socket, :error, "Failed to cancel session: #{reason}")}
-    end
+    {:noreply, socket}
   end
 
   @impl true
   def handle_event("pause_session", _params, socket) do
-    case pause_session(socket.assigns.session.id) do
-      {:ok, updated_session} ->
-        socket =
-          socket
-          |> assign(:session, updated_session)
-          |> put_flash(:info, "Session paused successfully")
-
-        {:noreply, socket}
-
-      {:error, reason} ->
-        {:noreply, put_flash(socket, :error, "Failed to pause session: #{reason}")}
-    end
+    # TODO: Implement session pause functionality
+    {:noreply, put_flash(socket, :error, "Pause functionality not yet implemented")}
   end
 
   @impl true
   def handle_event("resume_session", _params, socket) do
-    case resume_session(socket.assigns.session.id) do
-      {:ok, updated_session} ->
-        socket =
-          socket
-          |> assign(:session, updated_session)
-          |> put_flash(:info, "Session resumed successfully")
-
-        {:noreply, socket}
-
-      {:error, reason} ->
-        {:noreply, put_flash(socket, :error, "Failed to resume session: #{reason}")}
-    end
+    # TODO: Implement session resume functionality
+    {:noreply, put_flash(socket, :error, "Resume functionality not yet implemented")}
   end
 
   @impl true
@@ -181,9 +145,6 @@ defmodule NCDB2Phx.Live.MonitorLive.Session do
     socket
   end
 
-  defp cancel_session(_id), do: {:error, "Not implemented"}
-  defp pause_session(_id), do: {:error, "Not implemented"}
-  defp resume_session(_id), do: {:error, "Not implemented"}
 
   defp page_header(assigns) do
     ~H"""

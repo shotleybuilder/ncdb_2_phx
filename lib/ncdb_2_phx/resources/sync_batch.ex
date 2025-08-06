@@ -48,7 +48,9 @@ defmodule NCDB2Phx.Resources.SyncBatch do
 
   postgres do
     table "generic_sync_batches"
-    repo NCDB2Phx.Repo
+    if Mix.env() in [:test, :dev] do
+      repo NCDB2Phx.TestRepo
+    end
     
     custom_indexes do
       index [:session_id]

@@ -14,9 +14,9 @@ defmodule NCDB2Phx.Resources.SyncLogTest do
         session_id: session.id,
         level: :info,
         message: "Test log message",
-        component: "test",
-        timestamp: DateTime.utc_now(),
-        metadata: %{key: "value"}
+        event_type: :record_processed,
+        data: %{component: "test"},
+        context: %{key: "value"}
       }
 
       assert {:ok, log} = 
@@ -27,13 +27,13 @@ defmodule NCDB2Phx.Resources.SyncLogTest do
       assert log.session_id == session.id
       assert log.level == :info
       assert log.message == "Test log message"
-      assert log.component == "test"
+      assert log.event_type == :record_processed
     end
 
     test "requires session_id and message", %{session: _session} do
       attrs = %{
         level: :info,
-        component: "test"
+        event_type: :record_processed
       }
 
       assert {:error, %Ash.Error.Invalid{}} = 
@@ -68,16 +68,11 @@ defmodule NCDB2Phx.Resources.SyncLogTest do
   defp create_test_sync_session(attrs \\ %{}) do
     default_attrs = %{
       session_id: Ecto.UUID.generate(),
-      sync_type: :test,
-      description: "Test sync session",
-      status: :pending,
+      sync_type: :custom_sync,
       target_resource: "TestResource",
       source_adapter: "TestAdapter",
-      total_records: 100,
-      processed_records: 0,
-      failed_records: 0,
+      estimated_total: 100,
       config: %{},
-      started_at: DateTime.utc_now(),
       metadata: %{}
     }
 
@@ -93,9 +88,9 @@ defmodule NCDB2Phx.Resources.SyncLogTest do
       session_id: session.id,
       level: :info,
       message: "Test log message",
-      component: "test",
-      timestamp: DateTime.utc_now(),
-      metadata: %{}
+      event_type: :record_processed,
+      data: %{component: "test"},
+      context: %{test: true}
     }
 
     attrs = Map.merge(default_attrs, attrs)

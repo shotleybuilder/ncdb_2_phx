@@ -16,9 +16,16 @@ The codebase is a **package/library** designed to be integrated into other Phoen
 mix deps.get
 
 # Database operations
-mix ecto.create       # Create database
-mix ash.codegen       # Generate migrations from resources (after creating or modifying Ash code)
-# DO NOT use mix ecto.migrate in Ash projects - migrations are handled by ash.codegen
+mix ecto.create         # Create database
+mix ash.codegen --dev   # Generate dev migrations during development
+mix ash.migrate         # Apply migrations (standard Ash command, not ecto.migrate)
+
+# Production workflow:
+# 1. Make resource changes
+# 2. mix ash.codegen --dev (generates dev migrations)
+# 3. mix ash.migrate (applies migrations)  
+# 4. When ready: mix ash.codegen migration_name (creates named migration)
+# 5. mix ash.migrate (applies final migration)
 ```
 
 ### Testing

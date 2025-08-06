@@ -66,7 +66,9 @@ defmodule NCDB2Phx.Resources.SyncSession do
 
   postgres do
     table "airtable_sync_sessions"
-    repo NCDB2Phx.Repo
+    if Mix.env() in [:test, :dev] do
+      repo NCDB2Phx.TestRepo
+    end
   end
 
   attributes do
@@ -359,6 +361,7 @@ defmodule NCDB2Phx.Resources.SyncSession do
     end
     
     update :update do
+      require_atomic? false
       accept [
         :status,
         :progress_stats,
@@ -383,11 +386,13 @@ defmodule NCDB2Phx.Resources.SyncSession do
     end
     
     update :mark_running do
+      require_atomic? false
       change set_attribute(:status, :running)
       change set_attribute(:started_at, &DateTime.utc_now/0)
     end
     
     update :mark_completed do
+      require_atomic? false
       argument :final_stats, :map, allow_nil?: false
       
       change set_attribute(:status, :completed)
@@ -402,6 +407,7 @@ defmodule NCDB2Phx.Resources.SyncSession do
     end
     
     update :mark_failed do
+      require_atomic? false
       argument :error_info, :map, allow_nil?: false
       
       change set_attribute(:status, :failed)
@@ -416,6 +422,7 @@ defmodule NCDB2Phx.Resources.SyncSession do
     end
     
     update :update_progress do
+      require_atomic? false
       argument :progress_update, :map, allow_nil?: false
       
       change fn changeset, _context ->
@@ -430,6 +437,7 @@ defmodule NCDB2Phx.Resources.SyncSession do
     end
     
     update :increment_errors do
+      require_atomic? false
       argument :error_details, :map, allow_nil?: true
       
       change fn changeset, _context ->
@@ -470,9 +478,9 @@ defmodule NCDB2Phx.Resources.SyncSession do
       session_id = Ash.Changeset.get_attribute(changeset, :session_id)
       
       if String.match?(session_id || "", ~r/^[a-zA-Z0-9_-]+$/) do
-        []
+        :ok
       else
-        [{:error, field: :session_id, message: "must contain only letters, numbers, hyphens, and underscores"}]
+        {:error, field: :session_id, message: "must contain only letters, numbers, hyphens, and underscores"}
       end
     end
     
@@ -482,16 +490,16 @@ defmodule NCDB2Phx.Resources.SyncSession do
       
       cond do
         is_nil(estimated_total) and is_nil(actual_total) ->
-          []
+          :ok
           
         not is_nil(estimated_total) and estimated_total < 0 ->
-          [{:error, field: :estimated_total, message: "must be non-negative"}]
+          {:error, field: :estimated_total, message: "must be non-negative"}
           
         not is_nil(actual_total) and actual_total < 0 ->
-          [{:error, field: :actual_total, message: "must be non-negative"}]
+          {:error, field: :actual_total, message: "must be non-negative"}
           
         true ->
-          []
+          :ok
       end
     end
   end

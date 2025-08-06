@@ -2,8 +2,8 @@ defmodule NCDB2Phx.Live.SessionLive.Index do
   use NCDB2Phx.Live.BaseSyncLive
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, socket} = super(_params, _session, socket)
+  def mount(params, session, socket) do
+    {:ok, socket} = super(params, session, socket)
 
     socket =
       socket

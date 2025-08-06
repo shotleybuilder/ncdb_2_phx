@@ -2,30 +2,20 @@ defmodule NCDB2Phx.Live.LogLive.Session do
   use NCDB2Phx.Live.BaseSyncLive
 
   @impl true
-  def mount(%{"session_id" => session_id}, _session, socket) do
-    {:ok, socket} = super(%{"session_id" => session_id}, _session, socket)
+  def mount(%{"session_id" => session_id}, session, socket) do
+    {:ok, socket} = super(%{"session_id" => session_id}, session, socket)
 
-    case load_session(session_id) do
-      {:ok, session} ->
-        socket =
-          socket
-          |> assign(:session, session)
-          |> assign(:logs, list_session_logs(session_id))
-          |> assign(:filters, %{level: :all, search: ""})
-          |> assign(:timeline_view, false)
-          |> assign(:live_streaming, false)
-          |> assign(:log_stats, calculate_log_statistics(session_id))
+    {:ok, session} = load_session(session_id)
+    socket =
+      socket
+      |> assign(:session, session)
+      |> assign(:logs, list_session_logs(session_id))
+      |> assign(:filters, %{level: :all, search: ""})
+      |> assign(:timeline_view, false)
+      |> assign(:live_streaming, false)
+      |> assign(:log_stats, calculate_log_statistics(session_id))
 
-        {:ok, socket}
-
-      {:error, :not_found} ->
-        socket =
-          socket
-          |> put_flash(:error, "Session not found")
-          |> push_navigate(to: "/sync/logs")
-
-        {:ok, socket}
-    end
+    {:ok, socket}
   end
 
   @impl true
@@ -66,19 +56,8 @@ defmodule NCDB2Phx.Live.LogLive.Session do
 
   @impl true
   def handle_event("clear_session_logs", _params, socket) do
-    case clear_session_logs(socket.assigns.session.id) do
-      {:ok, _result} ->
-        socket =
-          socket
-          |> assign(:logs, [])
-          |> assign(:log_stats, calculate_log_statistics(socket.assigns.session.id))
-          |> put_flash(:info, "Session logs cleared successfully")
-
-        {:noreply, socket}
-
-      {:error, reason} ->
-        {:noreply, put_flash(socket, :error, "Failed to clear logs: #{reason}")}
-    end
+    {:error, reason} = clear_session_logs(socket.assigns.session.id)
+    {:noreply, put_flash(socket, :error, "Failed to clear logs: #{reason}")}
   end
 
   @impl true
@@ -163,7 +142,7 @@ defmodule NCDB2Phx.Live.LogLive.Session do
     }
   end
 
-  defp atomize_param(value, default) when is_binary(value), do: String.to_atom(value)
+  defp atomize_param(value, _default) when is_binary(value), do: String.to_atom(value)
   defp atomize_param(_value, default), do: default
 
   defp subscribe_to_session_logs(_session_id) do

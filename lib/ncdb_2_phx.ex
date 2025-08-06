@@ -94,11 +94,11 @@ defmodule NCDB2Phx do
   # Domain-level code interface for easy access
   
   def create_sync_session(attrs, opts \\ []) do
-    NCDB2Phx.Resources.SyncSession.create_session(attrs, opts)
+    Ash.create(NCDB2Phx.Resources.SyncSession, attrs, Keyword.merge([action: :create_session], opts))
   end
 
   def start_sync_session(attrs, opts \\ []) do
-    NCDB2Phx.Resources.SyncSession.start_session(attrs, opts)
+    Ash.create(NCDB2Phx.Resources.SyncSession, attrs, Keyword.merge([action: :start_session], opts))
   end
 
   def get_sync_session(session_id, opts \\ []) do
@@ -167,15 +167,15 @@ defmodule NCDB2Phx do
   # Event system operations
 
   def broadcast_sync_event(event_type, event_data, opts \\ []) do
-    NCDB2Phx.Systems.EventSystem.broadcast_sync_event(event_type, event_data, opts)
+    NCDB2Phx.Utilities.EventSystem.broadcast_sync_event(event_type, event_data, opts)
   end
 
   def subscribe_to_sync_events(topic) do
-    NCDB2Phx.Systems.EventSystem.subscribe(topic)
+    NCDB2Phx.Utilities.EventSystem.subscribe(topic)
   end
 
   def stream_sync_events(topic, opts \\ []) do
-    NCDB2Phx.Systems.EventSystem.stream_events(topic, opts)
+    NCDB2Phx.Utilities.EventSystem.stream_events(topic, opts)
   end
 
   # Utility functions for package users

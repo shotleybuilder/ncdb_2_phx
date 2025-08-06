@@ -2,8 +2,8 @@ defmodule NCDB2Phx.Live.ConfigLive do
   use NCDB2Phx.Live.BaseSyncLive
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, socket} = super(_params, _session, socket)
+  def mount(params, session, socket) do
+    {:ok, socket} = super(params, session, socket)
 
     socket =
       socket
@@ -25,24 +25,13 @@ defmodule NCDB2Phx.Live.ConfigLive do
 
   @impl true
   def handle_event("update_config", %{"config" => config_params}, socket) do
-    case update_configuration(config_params) do
-      {:ok, updated_config} ->
-        socket =
-          socket
-          |> assign(:current_config, updated_config)
-          |> assign(:unsaved_changes, false)
-          |> put_flash(:info, "Configuration updated successfully")
+    {:error, %Ecto.Changeset{} = changeset} = update_configuration(config_params)
+    socket =
+      socket
+      |> assign(:config_form, changeset)
+      |> put_flash(:error, "Please fix the errors below")
 
-        {:noreply, socket}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        socket =
-          socket
-          |> assign(:config_form, changeset)
-          |> put_flash(:error, "Please fix the errors below")
-
-        {:noreply, socket}
-    end
+    {:noreply, socket}
   end
 
   @impl true
@@ -82,13 +71,8 @@ defmodule NCDB2Phx.Live.ConfigLive do
 
   @impl true
   def handle_event("test_adapter", %{"adapter" => adapter_name}, socket) do
-    case test_adapter_connection(adapter_name) do
-      {:ok, result} ->
-        {:noreply, put_flash(socket, :info, "Adapter test successful: #{result.message}")}
-
-      {:error, reason} ->
-        {:noreply, put_flash(socket, :error, "Adapter test failed: #{reason}")}
-    end
+    {:error, reason} = test_adapter_connection(adapter_name)
+    {:noreply, put_flash(socket, :error, "Adapter test failed: #{reason}")}
   end
 
   @impl true

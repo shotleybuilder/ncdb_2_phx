@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to AirtableSyncPhoenix will be documented in this file.
+All notable changes to NCDB2Phx will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -13,6 +13,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Package metadata preparation for hex.pm publication
+
+## [0.2.3] - 2025-08-06
+
+### Added
+- **Ash Framework Compliance**: Added proper PostgreSQL version configuration and extension support
+- **Domain Configuration**: Added Ash domain configuration for proper framework integration
+
+### Changed
+- **API Consistency**: Updated main API functions to use proper Ash resource actions
+  - `create_sync_session/2` and `start_sync_session/2` now use `Ash.create` with correct action names
+- **Event System Integration**: Corrected module references from non-existent `Systems` to proper `Utilities` namespace
+
+### Fixed
+- **Production Ready**: Eliminated all compilation warnings for clean package consumption
+- **Ash Resource Actions**: Added `require_atomic? false` to complex update actions in SyncSession resource
+- **Type Safety**: Improved code reliability by removing unreachable error handling clauses
 
 ## [0.2.2] - 2025-08-06
 

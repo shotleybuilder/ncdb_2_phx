@@ -2,45 +2,25 @@ defmodule NCDB2Phx.Live.BatchLive.Show do
   use NCDB2Phx.Live.BaseSyncLive
 
   @impl true
-  def mount(%{"id" => id}, _session, socket) do
-    {:ok, socket} = super(%{"id" => id}, _session, socket)
+  def mount(%{"id" => id}, session, socket) do
+    {:ok, socket} = super(%{"id" => id}, session, socket)
 
-    case load_batch(id) do
-      {:ok, batch} ->
-        socket =
-          socket
-          |> assign(:batch, batch)
-          |> assign(:session, load_batch_session(batch.session_id))
-          |> assign(:record_details, load_record_details(id))
-          |> assign(:error_analysis, analyze_batch_errors(id))
-          |> assign(:performance_metrics, calculate_batch_performance(batch))
+    {:ok, batch} = load_batch(id)
+    socket =
+      socket
+      |> assign(:batch, batch)
+      |> assign(:session, load_batch_session(batch.session_id))
+      |> assign(:record_details, load_record_details(id))
+      |> assign(:error_analysis, analyze_batch_errors(id))
+      |> assign(:performance_metrics, calculate_batch_performance(batch))
 
-        {:ok, socket}
-
-      {:error, :not_found} ->
-        socket =
-          socket
-          |> put_flash(:error, "Batch not found")
-          |> push_navigate(to: "/sync/batches")
-
-        {:ok, socket}
-    end
+    {:ok, socket}
   end
 
   @impl true
   def handle_event("retry_batch", _params, socket) do
-    case retry_batch(socket.assigns.batch.id) do
-      {:ok, new_batch} ->
-        socket =
-          socket
-          |> put_flash(:info, "Batch retry initiated")
-          |> push_navigate(to: "/sync/batches/#{new_batch.id}")
-
-        {:noreply, socket}
-
-      {:error, reason} ->
-        {:noreply, put_flash(socket, :error, "Failed to retry batch: #{reason}")}
-    end
+    {:error, reason} = retry_batch(socket.assigns.batch.id)
+    {:noreply, put_flash(socket, :error, "Failed to retry batch: #{reason}")}
   end
 
   @impl true
@@ -50,7 +30,7 @@ defmodule NCDB2Phx.Live.BatchLive.Show do
   end
 
   @impl true
-  def handle_event("toggle_record_details", %{"record_id" => record_id}, socket) do
+  def handle_event("toggle_record_details", %{"record_id" => _record_id}, socket) do
     # TODO: Toggle detailed view for specific record
     {:noreply, socket}
   end

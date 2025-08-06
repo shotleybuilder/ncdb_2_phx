@@ -326,22 +326,17 @@ defmodule NCDB2Phx.Utilities.EventSystem do
     
     # This would typically query from persistent storage
     # For now, filter from in-memory history
-    case get_event_system_state() do
-      {:ok, state} ->
-        filtered_events = state.event_history
-        |> Enum.filter(fn event ->
-          event.session_id == session_id
-        end)
-        |> maybe_filter_by_timestamp(since)
-        |> maybe_filter_by_event_types(event_types)
-        |> Enum.take(limit)
-        |> Enum.reverse()
-        
-        {:ok, filtered_events}
-        
-      {:error, reason} ->
-        {:error, reason}
-    end
+    {:ok, state} = get_event_system_state()
+    filtered_events = state.event_history
+    |> Enum.filter(fn event ->
+      event.session_id == session_id
+    end)
+    |> maybe_filter_by_timestamp(since)
+    |> maybe_filter_by_event_types(event_types)
+    |> Enum.take(limit)
+    |> Enum.reverse()
+    
+    {:ok, filtered_events}
   end
 
   @doc """
@@ -493,36 +488,26 @@ defmodule NCDB2Phx.Utilities.EventSystem do
   defp store_event_in_history(event) do
     # This would typically store to persistent storage
     # For now, add to in-memory history
-    case get_event_system_state() do
-      {:ok, state} ->
-        _updated_history = [event | state.event_history]
-        |> Enum.take(state.config.event_history.max_events)
-        
-        # Update state (this would be persistent in real implementation)
-        :ok
-        
-      {:error, _reason} ->
-        :ok  # Continue without history
-    end
+    {:ok, state} = get_event_system_state()
+    _updated_history = [event | state.event_history]
+    |> Enum.take(state.config.event_history.max_events)
+    
+    # Update state (this would be persistent in real implementation)
+    :ok
   end
 
   defp notify_event_handlers(event) do
-    case get_event_system_state() do
-      {:ok, state} ->
-        Enum.each(state.event_handlers, fn handler_module ->
-          try do
-            if function_exported?(handler_module, :handle_sync_event, 1) do
-              handler_module.handle_sync_event(event)
-            end
-          rescue
-            error ->
-              Logger.warning("⚠️ Event handler #{handler_module} failed: #{inspect(error)}")
-          end
-        end)
-        
-      {:error, _reason} ->
-        :ok  # Continue without handlers
-    end
+    {:ok, state} = get_event_system_state()
+    Enum.each(state.event_handlers, fn handler_module ->
+      try do
+        if function_exported?(handler_module, :handle_sync_event, 1) do
+          handler_module.handle_sync_event(event)
+        end
+      rescue
+        error ->
+          Logger.warning("⚠️ Event handler #{handler_module} failed: #{inspect(error)}")
+      end
+    end)
   end
 
   defp get_pubsub_module do

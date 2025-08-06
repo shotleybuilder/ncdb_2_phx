@@ -2,55 +2,30 @@ defmodule NCDB2Phx.Live.SessionLive.Show do
   use NCDB2Phx.Live.BaseSyncLive
 
   @impl true
-  def mount(%{"id" => id}, _session, socket) do
-    {:ok, socket} = super(%{"id" => id}, _session, socket)
+  def mount(%{"id" => id}, session, socket) do
+    {:ok, socket} = super(%{"id" => id}, session, socket)
 
-    case load_session(id) do
-      {:ok, session} ->
-        socket =
-          socket
-          |> assign(:session, session)
-          |> assign(:batches, load_session_batches(id))
-          |> assign(:logs, load_session_logs(id))
-          |> assign(:performance_metrics, calculate_performance_metrics(session))
+    {:ok, session} = load_session(id)
+    socket =
+      socket
+      |> assign(:session, session)
+      |> assign(:batches, load_session_batches(id))
+      |> assign(:logs, load_session_logs(id))
+      |> assign(:performance_metrics, calculate_performance_metrics(session))
 
-        {:ok, socket}
-
-      {:error, :not_found} ->
-        socket =
-          socket
-          |> put_flash(:error, "Session not found")
-          |> push_navigate(to: "/sync/sessions")
-
-        {:ok, socket}
-    end
+    {:ok, socket}
   end
 
   @impl true
   def handle_event("cancel_session", _params, socket) do
-    case cancel_session(socket.assigns.session.id) do
-      {:ok, updated_session} ->
-        socket =
-          socket
-          |> assign(:session, updated_session)
-          |> put_flash(:info, "Session cancelled successfully")
-
-        {:noreply, socket}
-
-      {:error, reason} ->
-        {:noreply, put_flash(socket, :error, "Failed to cancel session: #{reason}")}
-    end
+    {:error, reason} = cancel_session(socket.assigns.session.id)
+    {:noreply, put_flash(socket, :error, "Failed to cancel session: #{reason}")}
   end
 
   @impl true
   def handle_event("retry_session", _params, socket) do
-    case retry_session(socket.assigns.session.id) do
-      {:ok, new_session} ->
-        {:noreply, push_navigate(socket, to: "/sync/sessions/#{new_session.id}")}
-
-      {:error, reason} ->
-        {:noreply, put_flash(socket, :error, "Failed to retry session: #{reason}")}
-    end
+    {:error, reason} = retry_session(socket.assigns.session.id)
+    {:noreply, put_flash(socket, :error, "Failed to retry session: #{reason}")}
   end
 
   @impl true

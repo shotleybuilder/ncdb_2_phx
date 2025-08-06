@@ -8,11 +8,12 @@ defmodule NCDB2Phx.API.FallbackController do
   
   use Phoenix.Controller
   
+  @doc """
+  Handles various error patterns and converts them to appropriate HTTP responses.
+  """
+  
   require Logger
 
-  @doc """
-  Handle Ecto.Changeset errors from validation failures.
-  """
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
     conn
     |> put_status(:unprocessable_entity)
@@ -20,9 +21,6 @@ defmodule NCDB2Phx.API.FallbackController do
     |> render(:changeset_error, changeset: changeset)
   end
 
-  @doc """
-  Handle not found errors.
-  """
   def call(conn, {:error, :not_found}) do
     conn
     |> put_status(:not_found)
@@ -30,9 +28,6 @@ defmodule NCDB2Phx.API.FallbackController do
     |> render(:not_found)
   end
 
-  @doc """
-  Handle unauthorized access errors.
-  """
   def call(conn, {:error, :unauthorized}) do
     conn
     |> put_status(:unauthorized)
@@ -40,9 +35,6 @@ defmodule NCDB2Phx.API.FallbackController do
     |> render(:unauthorized)
   end
 
-  @doc """
-  Handle forbidden access errors.
-  """
   def call(conn, {:error, :forbidden}) do
     conn
     |> put_status(:forbidden)
@@ -50,9 +42,6 @@ defmodule NCDB2Phx.API.FallbackController do
     |> render(:forbidden)
   end
 
-  @doc """
-  Handle session state errors (e.g., trying to cancel a completed session).
-  """
   def call(conn, {:error, :not_cancellable}) do
     conn
     |> put_status(:conflict)
@@ -73,9 +62,6 @@ defmodule NCDB2Phx.API.FallbackController do
     })
   end
 
-  @doc """
-  Handle timeout errors.
-  """
   def call(conn, {:error, :timeout}) do
     conn
     |> put_status(:gateway_timeout)
@@ -83,9 +69,6 @@ defmodule NCDB2Phx.API.FallbackController do
     |> render(:timeout)
   end
 
-  @doc """
-  Handle rate limiting errors.
-  """
   def call(conn, {:error, :rate_limited}) do
     conn
     |> put_status(:too_many_requests)
@@ -93,9 +76,6 @@ defmodule NCDB2Phx.API.FallbackController do
     |> render(:rate_limited)
   end
 
-  @doc """
-  Handle validation errors with custom messages.
-  """
   def call(conn, {:error, :invalid_params, message}) do
     conn
     |> put_status(:bad_request)
@@ -103,9 +83,6 @@ defmodule NCDB2Phx.API.FallbackController do
     |> render(:bad_request, %{message: message})
   end
 
-  @doc """
-  Handle generic service errors.
-  """
   def call(conn, {:error, :service_error, message}) do
     conn
     |> put_status(:service_unavailable)
@@ -113,9 +90,6 @@ defmodule NCDB2Phx.API.FallbackController do
     |> render(:service_error, %{message: message})
   end
 
-  @doc """
-  Handle string error messages.
-  """
   def call(conn, {:error, message}) when is_binary(message) do
     Logger.error("API Error: #{message}")
     
@@ -125,9 +99,6 @@ defmodule NCDB2Phx.API.FallbackController do
     |> render(:internal_server_error, %{message: message})
   end
 
-  @doc """
-  Handle atom error types with generic messages.
-  """
   def call(conn, {:error, error_type}) when is_atom(error_type) do
     message = humanize_error_type(error_type)
     
@@ -142,9 +113,6 @@ defmodule NCDB2Phx.API.FallbackController do
     })
   end
 
-  @doc """
-  Handle unexpected errors and exceptions.
-  """
   def call(conn, error) do
     Logger.error("Unexpected API Error: #{inspect(error)}")
     

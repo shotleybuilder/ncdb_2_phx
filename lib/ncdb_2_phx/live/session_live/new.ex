@@ -2,8 +2,8 @@ defmodule NCDB2Phx.Live.SessionLive.New do
   use NCDB2Phx.Live.BaseSyncLive
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, socket} = super(_params, _session, socket)
+  def mount(params, session, socket) do
+    {:ok, socket} = super(params, session, socket)
 
     socket =
       socket
@@ -44,23 +44,13 @@ defmodule NCDB2Phx.Live.SessionLive.New do
 
   @impl true
   def handle_event("create_session", %{"session" => params}, socket) do
-    case create_sync_session(params) do
-      {:ok, session} ->
-        socket =
-          socket
-          |> put_flash(:info, "Sync session created successfully")
-          |> push_navigate(to: "/sync/sessions/#{session.id}")
+    {:error, %Ecto.Changeset{} = changeset} = create_sync_session(params)
+    socket =
+      socket
+      |> assign(:form, build_form(params, changeset))
+      |> put_flash(:error, "Please fix the errors below")
 
-        {:noreply, socket}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        socket =
-          socket
-          |> assign(:form, build_form(params, changeset))
-          |> put_flash(:error, "Please fix the errors below")
-
-        {:noreply, socket}
-    end
+    {:noreply, socket}
   end
 
   @impl true
@@ -124,7 +114,7 @@ defmodule NCDB2Phx.Live.SessionLive.New do
     """
   end
 
-  defp build_form(params \\ %{}, changeset \\ nil) do
+  defp build_form(_params \\ %{}, _changeset \\ nil) do
     # TODO: Create proper form with changeset
     Phoenix.HTML.FormData.to_form(%{}, as: :session)
   end

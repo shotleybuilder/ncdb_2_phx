@@ -13,11 +13,8 @@ defmodule NCDB2Phx.Resources.SyncBatchTest do
       attrs = %{
         session_id: session.id,
         batch_number: 1,
-        status: :pending,
-        total_records: 10,
-        processed_records: 0,
-        failed_records: 0,
-        started_at: DateTime.utc_now(),
+        batch_size: 10,
+        source_ids: ["rec1", "rec2", "rec3"],
         metadata: %{}
       }
 
@@ -54,17 +51,12 @@ defmodule NCDB2Phx.Resources.SyncBatchTest do
 
   defp create_test_sync_session(attrs \\ %{}) do
     default_attrs = %{
-      session_id: Ecto.UUID.generate(),
-      sync_type: :test,
-      description: "Test sync session",
-      status: :pending,
+      session_id: "test_session_" <> String.replace(Ecto.UUID.generate(), "-", "_"),
+      sync_type: :custom_sync,
       target_resource: "TestResource",
       source_adapter: "TestAdapter",
-      total_records: 100,
-      processed_records: 0,
-      failed_records: 0,
+      estimated_total: 100,
       config: %{},
-      started_at: DateTime.utc_now(),
       metadata: %{}
     }
 
@@ -79,11 +71,8 @@ defmodule NCDB2Phx.Resources.SyncBatchTest do
     default_attrs = %{
       session_id: session.id,
       batch_number: 1,
-      status: :pending,
-      total_records: 10,
-      processed_records: 0,
-      failed_records: 0,
-      started_at: DateTime.utc_now(),
+      batch_size: 10,
+      source_ids: ["rec1", "rec2", "rec3"],
       metadata: %{}
     }
 

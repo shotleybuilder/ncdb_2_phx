@@ -372,6 +372,17 @@ defmodule NCDB2Phx.Utilities.ConfigValidator do
     adapter_module = Map.get(config, :source_adapter)
     adapter_config = Map.get(config, :source_config)
     
+    # Handle case where no source adapter is configured
+    if is_nil(adapter_module) do
+      error = %{
+        field: :source_adapter,
+        error: :required_missing,
+        message: "Source adapter must be specified",
+        details: %{provided_config: config}
+      }
+      {:error, [error]}
+    else
+    
     # Initialize adapter and test connection
     case adapter_module.initialize(adapter_config) do
       {:ok, adapter_state} ->
@@ -402,6 +413,7 @@ defmodule NCDB2Phx.Utilities.ConfigValidator do
           details: %{adapter: adapter_module, error: init_error}
         }
         {:error, [error]}
+    end
     end
   end
 

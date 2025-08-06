@@ -2,27 +2,17 @@ defmodule NCDB2Phx.Live.SessionLive.Edit do
   use NCDB2Phx.Live.BaseSyncLive
 
   @impl true
-  def mount(%{"id" => id}, _session, socket) do
-    {:ok, socket} = super(%{"id" => id}, _session, socket)
+  def mount(%{"id" => id}, session, socket) do
+    {:ok, socket} = super(%{"id" => id}, session, socket)
 
-    case load_session(id) do
-      {:ok, session} ->
-        socket =
-          socket
-          |> assign(:session, session)
-          |> assign(:form, build_form_from_session(session))
-          |> assign(:validation_errors, %{})
+    {:ok, session} = load_session(id)
+    socket =
+      socket
+      |> assign(:session, session)
+      |> assign(:form, build_form_from_session(session))
+      |> assign(:validation_errors, %{})
 
-        {:ok, socket}
-
-      {:error, :not_found} ->
-        socket =
-          socket
-          |> put_flash(:error, "Session not found")
-          |> push_navigate(to: "/sync/sessions")
-
-        {:ok, socket}
-    end
+    {:ok, socket}
   end
 
   @impl true
@@ -39,23 +29,13 @@ defmodule NCDB2Phx.Live.SessionLive.Edit do
 
   @impl true
   def handle_event("update_session", %{"session" => params}, socket) do
-    case update_sync_session(socket.assigns.session.id, params) do
-      {:ok, updated_session} ->
-        socket =
-          socket
-          |> put_flash(:info, "Session updated successfully")
-          |> push_navigate(to: "/sync/sessions/#{updated_session.id}")
+    {:error, %Ecto.Changeset{} = changeset} = update_sync_session(socket.assigns.session.id, params)
+    socket =
+      socket
+      |> assign(:form, build_form_from_changeset(changeset))
+      |> put_flash(:error, "Please fix the errors below")
 
-        {:noreply, socket}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        socket =
-          socket
-          |> assign(:form, build_form_from_changeset(changeset))
-          |> put_flash(:error, "Please fix the errors below")
-
-        {:noreply, socket}
-    end
+    {:noreply, socket}
   end
 
   @impl true

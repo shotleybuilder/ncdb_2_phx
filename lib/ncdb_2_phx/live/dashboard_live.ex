@@ -2,8 +2,8 @@ defmodule NCDB2Phx.Live.DashboardLive do
   use NCDB2Phx.Live.BaseSyncLive
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, socket} = super(_params, _session, socket)
+  def mount(params, session, socket) do
+    {:ok, socket} = super(params, session, socket)
 
     socket =
       socket
@@ -141,13 +141,15 @@ defmodule NCDB2Phx.Live.DashboardLive do
   end
 
   defp system_health_card(assigns) do
-    status_class = case @health.status do
+    health = assigns[:health] || %{status: :unknown}
+    status_class = case health.status do
       :healthy -> "status-healthy"
       :warning -> "status-warning"
       :error -> "status-error"
     end
 
     assigns = assign(assigns, :status_class, status_class)
+    assigns = assign(assigns, :health, health)
 
     ~H"""
     <div class="dashboard-card">
@@ -157,15 +159,15 @@ defmodule NCDB2Phx.Live.DashboardLive do
         <div class="health-metrics">
           <div class="metric">
             <span class="metric-label">Error Rate:</span>
-            <span class="metric-value"><%= Float.round(@health.error_rate * 100, 1) %>%</span>
+            <span class="metric-value"><%= Float.round((@health[:error_rate] || 0) * 100, 1) %>%</span>
           </div>
           <div class="metric">
             <span class="metric-label">Avg Duration:</span>
-            <span class="metric-value"><%= @health.avg_duration %>s</span>
+            <span class="metric-value"><%= @health[:avg_duration] || 0 %>s</span>
           </div>
           <div class="metric">
             <span class="metric-label">Active Syncs:</span>
-            <span class="metric-value"><%= @health.active_syncs %></span>
+            <span class="metric-value"><%= @health[:active_syncs] || 0 %></span>
           </div>
         </div>
       </div>

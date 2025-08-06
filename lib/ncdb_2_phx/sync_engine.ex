@@ -252,27 +252,17 @@ defmodule NCDB2Phx.SyncEngine do
     pubsub_config = config.pubsub_config
     session_config = config.session_config
     
-    case ProgressTracker.initialize(pubsub_config, session_config) do
-      {:ok, tracker} ->
-        Logger.debug("✅ Progress tracker initialized")
-        {:ok, tracker}
-        
-      {:error, reason} ->
-        {:error, {:progress_tracker_failed, reason}}
-    end
+    {:ok, tracker} = ProgressTracker.initialize(pubsub_config, session_config)
+    Logger.debug("✅ Progress tracker initialized")
+    {:ok, tracker}
   end
 
   defp initialize_error_handler(config) do
     error_config = Map.get(config, :error_handling_config, %{})
     
-    case ErrorHandler.initialize(error_config) do
-      {:ok, handler} ->
-        Logger.debug("✅ Error handler initialized")
-        {:ok, handler}
-        
-      {:error, reason} ->
-        {:error, {:error_handler_failed, reason}}
-    end
+    {:ok, handler} = ErrorHandler.initialize(error_config)
+    Logger.debug("✅ Error handler initialized")
+    {:ok, handler}
   end
 
   defp start_sync_session(config, session_id, opts) do
@@ -373,80 +363,50 @@ defmodule NCDB2Phx.SyncEngine do
       {:ok, batch_progress} = progress_tracker.start_batch(session_id, batch_config)
       
       # Process batch with error handling
-      case process_batch_with_error_handling(batch, target_processor, error_handler, config, actor) do
-        {:ok, batch_result} ->
-          # Update statistics
-          new_stats = %{
-            total_processed: acc_stats.total_processed + batch_result.processed,
-            created: acc_stats.created + batch_result.created,
-            updated: acc_stats.updated + batch_result.updated,
-            existing: acc_stats.existing + batch_result.existing,
-            errors: acc_stats.errors + batch_result.errors
-          }
-          
-          # Update batch progress
-          batch_results = %{
-            records_processed: batch_result.processed,
-            records_created: batch_result.created,
-            records_updated: batch_result.updated,
-            records_existing: batch_result.existing,
-            records_failed: batch_result.errors
-          }
-          
-          progress_tracker.update_batch_progress(batch_progress.id, batch_results)
-          progress_tracker.complete_batch(batch_progress.id, batch_results)
-          
-          Logger.info("✅ Batch #{batch_number} completed: #{inspect(batch_result)}")
-          
-          # Continue or halt based on limits
-          total_processed = new_stats.total_processed
-          limit = Map.get(processing_config, :limit, 1000)
-          
-          if total_processed >= limit do
-            {:halt, {new_stats, acc_errors}}
-          else
-            {:cont, {new_stats, acc_errors}}
-          end
-          
-        {:error, batch_error} ->
-          Logger.error("❌ Batch #{batch_number} failed: #{inspect(batch_error)}")
-          
-          # Handle batch error
-          updated_errors = [batch_error | acc_errors]
-          
-          # Mark batch as failed
-          progress_tracker.fail_batch(batch_progress.id, %{
-            error: batch_error,
-            batch_number: batch_number
-          })
-          
-          # Decide whether to continue based on error handling configuration
-          continue_on_error = Map.get(processing_config, :continue_on_batch_error, true)
-          
-          if continue_on_error do
-            Logger.warning("⚠️ Continuing sync despite batch error")
-            {:cont, {acc_stats, updated_errors}}
-          else
-            Logger.error("🛑 Stopping sync due to batch error")
-            {:halt, {:error, {:batch_failed, batch_error, acc_stats, updated_errors}}}
-          end
+      {:ok, batch_result} = process_batch_with_error_handling(batch, target_processor, error_handler, config, actor)
+      
+      # Update statistics
+      new_stats = %{
+        total_processed: acc_stats.total_processed + batch_result.processed,
+        created: acc_stats.created + batch_result.created,
+        updated: acc_stats.updated + batch_result.updated,
+        existing: acc_stats.existing + batch_result.existing,
+        errors: acc_stats.errors + batch_result.errors
+      }
+      
+      # Update batch progress
+      batch_results = %{
+        records_processed: batch_result.processed,
+        records_created: batch_result.created,
+        records_updated: batch_result.updated,
+        records_existing: batch_result.existing,
+        records_failed: batch_result.errors
+      }
+      
+      progress_tracker.update_batch_progress(batch_progress.id, batch_results)
+      progress_tracker.complete_batch(batch_progress.id, batch_results)
+      
+      Logger.info("✅ Batch #{batch_number} completed: #{inspect(batch_result)}")
+      
+      # Continue or halt based on limits
+      total_processed = new_stats.total_processed
+      limit = Map.get(processing_config, :limit, 1000)
+      
+      if total_processed >= limit do
+        {:halt, {new_stats, acc_errors}}
+      else
+        {:cont, {new_stats, acc_errors}}
       end
     end)
     
-    case result do
-      {final_stats, final_errors} ->
-        Logger.info("🎉 Sync pipeline completed successfully")
-        Logger.info("📊 Final stats: #{inspect(final_stats)}")
-        
-        {:ok, %{
-          stats: final_stats,
-          error_details: final_errors
-        }}
-        
-      {:error, pipeline_error} ->
-        Logger.error("💥 Sync pipeline failed: #{inspect(pipeline_error)}")
-        {:error, pipeline_error}
-    end
+    {final_stats, final_errors} = result
+    Logger.info("🎉 Sync pipeline completed successfully")
+    Logger.info("📊 Final stats: #{inspect(final_stats)}")
+    
+    {:ok, %{
+      stats: final_stats,
+      error_details: final_errors
+    }}
   end
 
   defp process_batch_with_error_handling(batch, target_processor, error_handler, config, actor) do

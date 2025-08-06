@@ -197,7 +197,7 @@ defmodule NCDB2Phx.API.SessionController do
     end
   end
 
-  defp calculate_avg_processing_time(session) do
+  defp calculate_avg_processing_time(_session) do
     # TODO: Calculate from batch processing times
     150
   end

@@ -229,6 +229,35 @@ defmodule NCDB2Phx.Utilities.ErrorHandler do
   end
 
   @doc """
+  Handles generic errors with context information.
+  
+  This is a simplified interface that delegates to the appropriate
+  specific error handling function based on context.
+  
+  ## Parameters
+  
+  * `error` - The error that occurred
+  * `context` - Context map with information about where the error occurred
+  
+  ## Returns
+  
+  * `{:ok, result}` - Error was handled successfully
+  * `{:error, details}` - Error handling failed
+  """
+  @spec handle_error(any(), map()) :: {:ok, any()} | {:error, any()}
+  def handle_error(error, context) do
+    # For now, provide a simple implementation that delegates to record error handling
+    # In a full implementation, this would analyze the context to determine the right handler
+    record = Map.get(context, :record, %{})
+    config = Map.get(context, :config, %{})
+    
+    case handle_record_error(error, record, config) do
+      {:ok, result} -> {:ok, result}
+      {:error, details} -> {:error, details}
+    end
+  end
+
+  @doc """
   Get current error handler statistics.
   
   ## Parameters
@@ -318,16 +347,10 @@ defmodule NCDB2Phx.Utilities.ErrorHandler do
   defp get_handler_state_from_config(config) do
     # This would typically retrieve or create a handler state from the config
     # For now, create a minimal state
-    case initialize(Map.get(config, :error_handling_config, %{})) do
-      {:ok, handler_state} -> handler_state
-      {:error, _} -> create_default_handler_state()
-    end
+    {:ok, handler_state} = initialize(Map.get(config, :error_handling_config, %{}))
+    handler_state
   end
 
-  defp create_default_handler_state do
-    {:ok, state} = initialize(%{})
-    state
-  end
 
   defp update_error_statistics(handler_state, error) do
     statistics = handler_state.error_statistics

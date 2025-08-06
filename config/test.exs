@@ -1,7 +1,11 @@
 import Config
 
-# Configure the database
-config :ncdb_2_phx, NCDB2Phx.Repo,
+# Configure test-only repo for testing
+config :ncdb_2_phx,
+  ecto_repos: [NCDB2Phx.TestRepo]
+
+# Configure the test database
+config :ncdb_2_phx, NCDB2Phx.TestRepo,
   username: System.get_env("DATABASE_USER", "postgres"),
   password: System.get_env("DATABASE_PASSWORD", "postgres"),
   hostname: System.get_env("DATABASE_HOST", "localhost"),
