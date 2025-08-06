@@ -1,4 +1,4 @@
-defmodule EhsEnforcement.Sync.Generic.ErrorHandler do
+defmodule NCDB2Phx.Utilities.ErrorHandler do
   @moduledoc """
   Generic error handling for sync operations.
   
@@ -33,9 +33,9 @@ defmodule EhsEnforcement.Sync.Generic.ErrorHandler do
           max_consecutive_errors: 10
         },
         integration: %{
-          error_classifier: EhsEnforcement.Sync.ErrorClassifier,
-          error_recovery: EhsEnforcement.Sync.ErrorRecovery,
-          retry_engine: EhsEnforcement.Sync.RetryEngine
+          error_classifier: NCDB2Phx.Utilities.ErrorClassifier,
+          error_recovery: NCDB2Phx.Utilities.ErrorRecovery,
+          retry_engine: NCDB2Phx.Utilities.RetryEngine
         }
       }
   
@@ -53,7 +53,7 @@ defmodule EhsEnforcement.Sync.Generic.ErrorHandler do
       end
   """
   
-  alias EhsEnforcement.Sync.{ErrorClassifier, ErrorRecovery, RetryEngine}
+  alias NCDB2Phx.Utilities.{ErrorClassifier, ErrorRecovery, RetryEngine}
   require Logger
 
   @type handler_config :: %{
@@ -158,7 +158,7 @@ defmodule EhsEnforcement.Sync.Generic.ErrorHandler do
         
       :open ->
         # Circuit breaker is open, reject immediately
-        Logger.warn("⚠️ Circuit breaker is open, rejecting error handling")
+        Logger.warning("⚠️ Circuit breaker is open, rejecting error handling")
         {:error, {:circuit_breaker_open, error}}
         
       :half_open ->
@@ -388,7 +388,7 @@ defmodule EhsEnforcement.Sync.Generic.ErrorHandler do
     end
   end
 
-  defp handle_error_with_recovery(error, record, config, handler_state) do
+  defp handle_error_with_recovery(error, record, _config, handler_state) do
     # Classify the error
     operation_context = %{
       operation: :record_processing,
@@ -404,7 +404,7 @@ defmodule EhsEnforcement.Sync.Generic.ErrorHandler do
     case error_classification.retry_strategy.type do
       :no_retry ->
         # Error is not recoverable
-        updated_state = record_unrecoverable_error(handler_state, error)
+        _updated_state = record_unrecoverable_error(handler_state, error)
         {:error, {:unrecoverable_error, error, error_classification}}
         
       _ ->
@@ -418,18 +418,18 @@ defmodule EhsEnforcement.Sync.Generic.ErrorHandler do
         case handler_state.error_recovery.orchestrate_recovery(error, operation_context, recovery_options) do
           {:ok, recovery_result} ->
             # Recovery successful
-            updated_state = record_recovered_error(handler_state, error)
+            _updated_state = record_recovered_error(handler_state, error)
             {:ok, recovery_result}
             
           {:error, recovery_error} ->
             # Recovery failed
-            updated_state = record_unrecoverable_error(handler_state, error)
+            _updated_state = record_unrecoverable_error(handler_state, error)
             {:error, {:recovery_failed, error, recovery_error}}
         end
     end
   end
 
-  defp handle_error_with_limited_recovery(error, record, config, handler_state) do
+  defp handle_error_with_limited_recovery(error, _record, _config, handler_state) do
     # In half-open circuit breaker state, use limited recovery attempts
     Logger.debug("🔄 Attempting limited error recovery (circuit breaker half-open)")
     
@@ -440,12 +440,12 @@ defmodule EhsEnforcement.Sync.Generic.ErrorHandler do
     end, %{max_attempts: 1, delay_ms: 500}) do
       {:ok, result} ->
         # Success - close circuit breaker
-        updated_cb_state = %{handler_state.circuit_breaker_state | status: :closed, failure_count: 0}
+        _updated_cb_state = %{handler_state.circuit_breaker_state | status: :closed, failure_count: 0}
         {:ok, result}
         
       {:error, retry_error} ->
         # Failure - open circuit breaker
-        updated_cb_state = %{
+        _updated_cb_state = %{
           handler_state.circuit_breaker_state | 
           status: :open, 
           failure_count: handler_state.circuit_breaker_state.failure_count + 1,

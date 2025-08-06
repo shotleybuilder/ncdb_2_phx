@@ -1,4 +1,4 @@
-defmodule EhsEnforcement.Sync.Generic.Validations do
+defmodule NCDB2Phx.Utilities.Validations do
   @moduledoc """
   Generic validation functions for sync resources.
   

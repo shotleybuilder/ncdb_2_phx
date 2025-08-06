@@ -1,4 +1,4 @@
-defmodule EhsEnforcement.Sync.Generic.ConfigValidator do
+defmodule NCDB2Phx.Utilities.ConfigValidator do
   @moduledoc """
   Configuration validation for the generic sync engine.
   
@@ -115,7 +115,7 @@ defmodule EhsEnforcement.Sync.Generic.ConfigValidator do
         {:ok, validated_config}
         
       {:error, errors} ->
-        Logger.warn("⚠️ Sync configuration validation failed: #{length(errors)} errors")
+        Logger.warning("⚠️ Sync configuration validation failed: #{length(errors)} errors")
         {:error, errors}
     end
   end
@@ -160,7 +160,7 @@ defmodule EhsEnforcement.Sync.Generic.ConfigValidator do
 
   # Private validation functions
 
-  defp run_validations(config, validations, opts) do
+  defp run_validations(config, validations, _opts) do
     {errors, validated_config} = Enum.reduce(validations, {[], config}, fn
       {validation_name, validation_func}, {acc_errors, acc_config} ->
         case validation_func.(acc_config) do
@@ -461,7 +461,7 @@ defmodule EhsEnforcement.Sync.Generic.ConfigValidator do
     end
   end
 
-  defp validate_adapter_config(adapter_module, adapter_config) do
+  defp validate_adapter_config(_adapter_module, adapter_config) do
     # This would validate adapter-specific configuration
     # For now, just ensure it's a map
     if is_map(adapter_config) do
@@ -564,7 +564,7 @@ defmodule EhsEnforcement.Sync.Generic.ConfigValidator do
     end
   end
 
-  defp validate_resource_config(resource_module, resource_config) do
+  defp validate_resource_config(_resource_module, resource_config) do
     # Additional resource-specific validations would go here
     {:ok, resource_config}
   end

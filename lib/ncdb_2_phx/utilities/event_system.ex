@@ -1,4 +1,4 @@
-defmodule EhsEnforcement.Sync.Generic.EventSystem do
+defmodule NCDB2Phx.Utilities.EventSystem do
   @moduledoc """
   Generic event system for sync operations that works with any Phoenix PubSub.
   
@@ -29,7 +29,7 @@ defmodule EhsEnforcement.Sync.Generic.EventSystem do
         data: %{...},
         metadata: %{
           version: "1.0",
-          source_module: "EhsEnforcement.Sync.Generic.SyncEngine",
+          source_module: "NCDB2Phx.SyncEngine",
           correlation_id: "corr_abc123"
         }
       }
@@ -287,7 +287,7 @@ defmodule EhsEnforcement.Sync.Generic.EventSystem do
             {:halt, stream_state}
             
           {:error, reason} ->
-            Logger.warn("⚠️ Event stream error: #{inspect(reason)}")
+            Logger.warning("⚠️ Event stream error: #{inspect(reason)}")
             {:halt, stream_state}
         end
       end,
@@ -432,7 +432,7 @@ defmodule EhsEnforcement.Sync.Generic.EventSystem do
       {:ok, valid_handlers}
     else
       invalid_handlers = handler_modules -- valid_handlers
-      Logger.warn("⚠️ Invalid event handlers: #{inspect(invalid_handlers)}")
+      Logger.warning("⚠️ Invalid event handlers: #{inspect(invalid_handlers)}")
       {:ok, valid_handlers}
     end
   end
@@ -486,7 +486,7 @@ defmodule EhsEnforcement.Sync.Generic.EventSystem do
         Phoenix.PubSub.broadcast(pubsub_module, topic, {:sync_event, event})
         
       {:error, _reason} ->
-        Logger.warn("⚠️ Could not broadcast to topic #{topic}: PubSub not available")
+        Logger.warning("⚠️ Could not broadcast to topic #{topic}: PubSub not available")
     end
   end
 
@@ -495,7 +495,7 @@ defmodule EhsEnforcement.Sync.Generic.EventSystem do
     # For now, add to in-memory history
     case get_event_system_state() do
       {:ok, state} ->
-        updated_history = [event | state.event_history]
+        _updated_history = [event | state.event_history]
         |> Enum.take(state.config.event_history.max_events)
         
         # Update state (this would be persistent in real implementation)
@@ -516,7 +516,7 @@ defmodule EhsEnforcement.Sync.Generic.EventSystem do
             end
           rescue
             error ->
-              Logger.warn("⚠️ Event handler #{handler_module} failed: #{inspect(error)}")
+              Logger.warning("⚠️ Event handler #{handler_module} failed: #{inspect(error)}")
           end
         end)
         
@@ -528,7 +528,7 @@ defmodule EhsEnforcement.Sync.Generic.EventSystem do
   defp get_pubsub_module do
     # This would typically get from application config or state
     # For now, use the existing PubSub module
-    {:ok, EhsEnforcement.PubSub}
+    {:ok, Application.get_env(:ncdb_2_phx, :pubsub_module) || raise("PubSub module not configured")}
   rescue
     _ -> {:error, :pubsub_not_available}
   end

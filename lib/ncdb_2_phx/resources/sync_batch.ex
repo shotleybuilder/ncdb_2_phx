@@ -1,4 +1,4 @@
-defmodule EhsEnforcement.Sync.Generic.Resources.GenericSyncBatch do
+defmodule NCDB2Phx.Resources.SyncBatch do
   @moduledoc """
   Generic Ash resource for tracking batch processing within sync sessions.
   
@@ -43,12 +43,12 @@ defmodule EhsEnforcement.Sync.Generic.Resources.GenericSyncBatch do
   """
   
   use Ash.Resource,
-    domain: EhsEnforcement.Sync.Generic,
+    domain: NCDB2Phx,
     data_layer: AshPostgres.DataLayer
 
   postgres do
     table "generic_sync_batches"
-    repo EhsEnforcement.Repo
+    repo NCDB2Phx.Repo
     
     custom_indexes do
       index [:session_id]
@@ -265,7 +265,7 @@ defmodule EhsEnforcement.Sync.Generic.Resources.GenericSyncBatch do
   end
 
   relationships do
-    belongs_to :sync_session, EhsEnforcement.Sync.Generic.Resources.GenericSyncSession do
+    belongs_to :sync_session, NCDB2Phx.Resources.SyncSession do
       source_attribute :session_id
       destination_attribute :session_id
       attribute_type :string

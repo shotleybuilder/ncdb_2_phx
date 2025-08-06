@@ -1,4 +1,4 @@
-defmodule EhsEnforcement.Sync.Generic.RecordTransformer do
+defmodule NCDB2Phx.Utilities.RecordTransformer do
   @moduledoc """
   Generic record transformation utilities for sync operations.
   
@@ -83,7 +83,7 @@ defmodule EhsEnforcement.Sync.Generic.RecordTransformer do
           {:cont, {:ok, transformed_record}}
           
         {:error, error} ->
-          Logger.warn("⚠️ Transformation failed: #{inspect(transformation)} - #{inspect(error)}")
+          Logger.warning("⚠️ Transformation failed: #{inspect(transformation)} - #{inspect(error)}")
           {:halt, {:error, {:transformation_failed, transformation, error}}}
       end
     end)
@@ -139,7 +139,7 @@ defmodule EhsEnforcement.Sync.Generic.RecordTransformer do
           end
           
         unknown_transformation ->
-          Logger.warn("⚠️ Unknown transformation: #{inspect(unknown_transformation)}")
+          Logger.warning("⚠️ Unknown transformation: #{inspect(unknown_transformation)}")
           {:ok, record}  # Skip unknown transformations
       end
     rescue

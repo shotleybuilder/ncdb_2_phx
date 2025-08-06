@@ -1,4 +1,4 @@
-defmodule EhsEnforcement.Sync.Generic.RecordValidator do
+defmodule NCDB2Phx.Utilities.RecordValidator do
   @moduledoc """
   Generic record validation utilities for sync operations.
   
@@ -147,7 +147,7 @@ defmodule EhsEnforcement.Sync.Generic.RecordValidator do
           end
           
         unknown_rule ->
-          Logger.warn("⚠️ Unknown validation rule: #{inspect(unknown_rule)}")
+          Logger.warning("⚠️ Unknown validation rule: #{inspect(unknown_rule)}")
           :ok  # Skip unknown rules
       end
     rescue

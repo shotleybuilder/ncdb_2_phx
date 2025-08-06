@@ -1,4 +1,4 @@
-defmodule EhsEnforcement.Sync.Generic.TargetProcessor do
+defmodule NCDB2Phx.Utilities.TargetProcessor do
   @moduledoc """
   Generic target processor for handling record processing to any Ash resource.
   
@@ -66,8 +66,8 @@ defmodule EhsEnforcement.Sync.Generic.TargetProcessor do
       # result is {:created, case_record} | {:updated, case_record} | {:existing, case_record}
   """
   
-  alias EhsEnforcement.Sync.Generic.RecordTransformer
-  alias EhsEnforcement.Sync.Generic.RecordValidator
+  alias NCDB2Phx.Utilities.RecordTransformer
+  alias NCDB2Phx.Utilities.RecordValidator
   require Logger
   require Ash.Query
   import Ash.Expr
@@ -281,7 +281,7 @@ defmodule EhsEnforcement.Sync.Generic.TargetProcessor do
         {:ok, record}
       {:error, validation_errors} ->
         if get_in(config, [:error_handling, :continue_on_validation_error]) do
-          Logger.warn("⚠️ Record validation failed but continuing: #{inspect(validation_errors)}")
+          Logger.warning("⚠️ Record validation failed but continuing: #{inspect(validation_errors)}")
           {:ok, record}
         else
           {:error, {:validation_failed, validation_errors}}
@@ -334,7 +334,7 @@ defmodule EhsEnforcement.Sync.Generic.TargetProcessor do
     # Add record ID if not mapped
     record_id = Map.get(record, "id") || Map.get(record, :id)
     if record_id && not Map.has_key?(mapped_attrs, :source_id) do
-      mapped_attrs = Map.put(mapped_attrs, :source_id, record_id)
+      _mapped_attrs = Map.put(mapped_attrs, :source_id, record_id)
     end
     
     {:ok, mapped_attrs}
@@ -343,7 +343,7 @@ defmodule EhsEnforcement.Sync.Generic.TargetProcessor do
   defp process_with_duplicate_handling(resource_module, attrs, config, actor) do
     unique_field = Map.get(config, :unique_field)
     create_action = Map.get(config, :create_action, :create)
-    update_action = Map.get(config, :update_action, :update)
+    _update_action = Map.get(config, :update_action, :update)
     duplicate_strategy = Map.get(config, :duplicate_strategy, :update)
     
     # Attempt to create record first
@@ -384,7 +384,7 @@ defmodule EhsEnforcement.Sync.Generic.TargetProcessor do
                 {:updated, updated_record}
               {:error, update_error} ->
                 # If update fails, return existing record as-is
-                Logger.warn("⚠️ Update failed, returning existing record: #{inspect(update_error)}")
+                Logger.warning("⚠️ Update failed, returning existing record: #{inspect(update_error)}")
                 {:existing, existing_record}
             end
             

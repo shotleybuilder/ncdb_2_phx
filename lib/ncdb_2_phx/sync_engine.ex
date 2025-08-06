@@ -47,7 +47,6 @@ defmodule NCDB2Phx.SyncEngine do
   """
   
   alias NCDB2Phx.Utilities.{
-    SourceAdapter,
     TargetProcessor,
     ProgressTracker,
     ErrorHandler,
@@ -99,7 +98,7 @@ defmodule NCDB2Phx.SyncEngine do
   @spec execute_sync(sync_config(), keyword()) :: {:ok, sync_result()} | {:error, any()}
   def execute_sync(config, opts \\ []) do
     start_time = System.monotonic_time(:millisecond)
-    actor = Keyword.get(opts, :actor)
+    _actor = Keyword.get(opts, :actor)
     dry_run = Keyword.get(opts, :dry_run, false)
     session_id = Keyword.get(opts, :session_id, generate_session_id())
     
@@ -186,7 +185,7 @@ defmodule NCDB2Phx.SyncEngine do
       :ok
     else
       {:error, :session_not_found} ->
-        Logger.warn("⚠️ Sync session not found: #{session_id}")
+        Logger.warning("⚠️ Sync session not found: #{session_id}")
         {:error, :session_not_found}
         
       {:error, reason} ->
@@ -425,7 +424,7 @@ defmodule NCDB2Phx.SyncEngine do
           continue_on_error = Map.get(processing_config, :continue_on_batch_error, true)
           
           if continue_on_error do
-            Logger.warn("⚠️ Continuing sync despite batch error")
+            Logger.warning("⚠️ Continuing sync despite batch error")
             {:cont, {acc_stats, updated_errors}}
           else
             Logger.error("🛑 Stopping sync due to batch error")
@@ -468,12 +467,12 @@ defmodule NCDB2Phx.SyncEngine do
               recovered_result
               
             {:error, unrecoverable_error} ->
-              Logger.warn("⚠️ Record error not recoverable: #{inspect(unrecoverable_error)}")
+              Logger.warning("⚠️ Record error not recoverable: #{inspect(unrecoverable_error)}")
               {:error, unrecoverable_error}
           end
           
         {:error, record_error} ->
-          Logger.warn("⚠️ Record processing failed: #{inspect(record_error)}")
+          Logger.warning("⚠️ Record processing failed: #{inspect(record_error)}")
           {:error, record_error}
       end
     end)
@@ -579,7 +578,7 @@ defmodule NCDB2Phx.SyncEngine do
         Stream.filter(stream, filter_function)
         
       _ ->
-        Logger.warn("⚠️ Unknown filter configuration: #{inspect(filter_config)}")
+        Logger.warning("⚠️ Unknown filter configuration: #{inspect(filter_config)}")
         stream
     end
   end
@@ -595,7 +594,7 @@ defmodule NCDB2Phx.SyncEngine do
         Stream.map(stream, transform_function)
         
       _ ->
-        Logger.warn("⚠️ Unknown transformation configuration: #{inspect(transform_config)}")
+        Logger.warning("⚠️ Unknown transformation configuration: #{inspect(transform_config)}")
         stream
     end
   end

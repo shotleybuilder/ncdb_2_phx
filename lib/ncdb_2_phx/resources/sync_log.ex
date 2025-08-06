@@ -1,4 +1,4 @@
-defmodule EhsEnforcement.Sync.Generic.Resources.GenericSyncLog do
+defmodule NCDB2Phx.Resources.SyncLog do
   @moduledoc """
   Generic Ash resource for logging sync operations and events.
   
@@ -43,7 +43,7 @@ defmodule EhsEnforcement.Sync.Generic.Resources.GenericSyncLog do
   """
   
   use Ash.Resource,
-    domain: EhsEnforcement.Sync.Generic,
+    domain: NCDB2Phx,
     data_layer: AshPostgres.DataLayer
     
   require Ash.Query
@@ -51,7 +51,7 @@ defmodule EhsEnforcement.Sync.Generic.Resources.GenericSyncLog do
 
   postgres do
     table "generic_sync_logs"
-    repo EhsEnforcement.Repo
+    repo NCDB2Phx.Repo
     
     custom_indexes do
       index [:session_id]
@@ -277,13 +277,13 @@ defmodule EhsEnforcement.Sync.Generic.Resources.GenericSyncLog do
   end
 
   relationships do
-    belongs_to :sync_session, EhsEnforcement.Sync.Generic.Resources.GenericSyncSession do
+    belongs_to :sync_session, NCDB2Phx.Resources.SyncSession do
       source_attribute :session_id
       destination_attribute :session_id
       attribute_type :string
     end
     
-    belongs_to :sync_batch, EhsEnforcement.Sync.Generic.Resources.GenericSyncBatch do
+    belongs_to :sync_batch, NCDB2Phx.Resources.SyncBatch do
       source_attribute :batch_id
       destination_attribute :id
     end

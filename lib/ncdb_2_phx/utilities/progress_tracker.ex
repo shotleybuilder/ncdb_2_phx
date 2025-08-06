@@ -1,4 +1,4 @@
-defmodule EhsEnforcement.Sync.Generic.ProgressTracker do
+defmodule NCDB2Phx.Utilities.ProgressTracker do
   @moduledoc """
   Generic progress tracking system for sync operations.
   
@@ -48,8 +48,8 @@ defmodule EhsEnforcement.Sync.Generic.ProgressTracker do
       ProgressTracker.complete_session(session_id, final_stats)
   """
   
-  alias EhsEnforcement.Sync.SessionManager
-  alias EhsEnforcement.Sync.EventBroadcaster
+  alias NCDB2Phx.Utilities.SessionManager
+  alias NCDB2Phx.Utilities.EventBroadcaster
   require Logger
 
   @type tracker_state :: %{
@@ -478,7 +478,7 @@ defmodule EhsEnforcement.Sync.Generic.ProgressTracker do
       fn ->
         # Subscribe to progress events
         topic = "sync_progress:#{session_id}"
-        Phoenix.PubSub.subscribe(EhsEnforcement.PubSub, topic)
+        Phoenix.PubSub.subscribe(Application.get_env(:ncdb_2_phx, :pubsub_module), topic)
         
         %{
           session_id: session_id,
@@ -522,7 +522,7 @@ defmodule EhsEnforcement.Sync.Generic.ProgressTracker do
       end,
       fn state ->
         # Cleanup - unsubscribe from PubSub
-        Phoenix.PubSub.unsubscribe(EhsEnforcement.PubSub, state.topic)
+        Phoenix.PubSub.unsubscribe(Application.get_env(:ncdb_2_phx, :pubsub_module), state.topic)
         :ok
       end
     )
@@ -547,7 +547,7 @@ defmodule EhsEnforcement.Sync.Generic.ProgressTracker do
   end
   
   defp initialize_session_storage(unknown_storage) do
-    Logger.warn("⚠️ Unknown session storage type: #{unknown_storage}, falling back to memory")
+    Logger.warning("⚠️ Unknown session storage type: #{unknown_storage}, falling back to memory")
     :ok
   end
 

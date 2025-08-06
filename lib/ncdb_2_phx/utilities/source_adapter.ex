@@ -88,7 +88,7 @@ defmodule NCDB2Phx.Utilities.SourceAdapter do
         defp normalize_csv_record({row_data, index}) do
           %{
             data: row_data,
-            source_record_id: "csv_row_#{index}",
+            source_record_id: "csv_row_\#{index}",
             source_metadata: %{
               row_number: index + 1,
               source_type: :csv_file
@@ -116,7 +116,7 @@ defmodule NCDB2Phx.Utilities.SourceAdapter do
           # Setup HTTP client and validate API credentials
           client = Tesla.client([
             {Tesla.Middleware.BaseUrl, config.base_url},
-            {Tesla.Middleware.Headers, [{"Authorization", "Bearer #{config.api_token}"}]},
+            {Tesla.Middleware.Headers, [{"Authorization", "Bearer \#{config.api_token}"}]},
             Tesla.Middleware.JSON
           ])
           
@@ -151,7 +151,7 @@ defmodule NCDB2Phx.Utilities.SourceAdapter do
         
         @impl true
         def get_total_count(adapter_state) do
-          case Tesla.get(adapter_state.client, "#{adapter_state.endpoint}/count") do
+          case Tesla.get(adapter_state.client, "\#{adapter_state.endpoint}/count") do
             {:ok, %{body: %{"count" => count}}} -> {:ok, count}
             {:error, reason} -> {:error, {:count_failed, reason}}
           end
@@ -396,7 +396,7 @@ defmodule NCDB2Phx.Utilities.SourceAdapter do
         "updated_at" => "2023-01-01T00:00:00Z"
       }
   """
-  @spec normalize_record(any(), keyword()) :: record()
+  @spec normalize_record(any(), keyword()) :: map()
   def normalize_record(source_record, opts \\ []) do
     id_field = Keyword.get(opts, :id_field, :id)
     fields_mapping = Keyword.get(opts, :fields_mapping, %{})
@@ -441,11 +441,11 @@ defmodule NCDB2Phx.Utilities.SourceAdapter do
         record_template: fn index ->
           %{
             data: %{
-              name: "Customer #{index}",
-              email: "customer#{index}@example.com",
+              name: "Customer \#{index}",
+              email: "customer\#{index}@example.com",
               plan: Enum.random(["basic", "premium", "enterprise"])
             },
-            source_record_id: "test_#{index}",
+            source_record_id: "test_\#{index}",
             source_metadata: %{
               created_at: DateTime.utc_now() |> DateTime.to_iso8601(),
               source_type: :test_data
@@ -561,14 +561,14 @@ defmodule NCDB2Phx.Utilities.SourceAdapter do
   defp default_test_record(index) do
     %{
       data: %{
-        name: "Test Record #{index}",
-        description: "Generated test record number #{index}",
+        name: "Test Record \#{index}",
+        description: "Generated test record number \#{index}",
         status: Enum.random(["active", "inactive", "pending"]),
         category: Enum.random(["category_a", "category_b", "category_c"]),
         sequence_number: index,
         created_at: DateTime.utc_now() |> DateTime.to_iso8601()
       },
-      source_record_id: "test_record_#{index}",
+      source_record_id: "test_record_\#{index}",
       source_metadata: %{
         generated_at: DateTime.utc_now() |> DateTime.to_iso8601(),
         source_type: :test_adapter,
