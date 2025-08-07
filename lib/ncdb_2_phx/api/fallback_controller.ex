@@ -6,7 +6,7 @@ defmodule NCDB2Phx.API.FallbackController do
   HTTP responses with consistent JSON error formats.
   """
   
-  use Phoenix.Controller
+  use Phoenix.Controller, formats: [:json]
   
   @doc """
   Handles various error patterns and converts them to appropriate HTTP responses.

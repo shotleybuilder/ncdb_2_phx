@@ -14,6 +14,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Package metadata preparation for hex.pm publication
 
+## [0.2.5] - 2025-08-06
+
+### Added
+- **Phoenix 1.8.0 Compatibility**: Package now supports both Phoenix 1.7.14+ and Phoenix 1.8.0
+  - Added `formats: [:json]` to API controllers to comply with Phoenix 1.8.0 requirements
+  - Updated dependency constraint to `~> 1.7.14 or ~> 1.8.0`
+  - All tests pass with Phoenix 1.8.0 compatibility changes
+
+### Changed
+- **API Controllers**: Updated `NCDB2Phx.API.SessionController` and `NCDB2Phx.API.FallbackController` to specify JSON format explicitly
+- **Dependency Constraints**: Broadened Phoenix support to include both 1.7.x and 1.8.x versions
+
+### Migration Notes
+**Host Applications**: No breaking changes. The package maintains backward compatibility with Phoenix 1.7.14+ while adding support for Phoenix 1.8.0. Host applications can upgrade to Phoenix 1.8.0 without any changes to their NCDB2Phx integration.
+
+**Benefits**:
+- Flexibility in Phoenix version choice for host applications
+- Future-proofed against Phoenix 1.8.0 adoption
+- Maintains all existing functionality across Phoenix versions
+
 ## [0.2.4] - 2025-08-06
 
 ### Changed

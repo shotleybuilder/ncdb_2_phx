@@ -1,5 +1,5 @@
 defmodule NCDB2Phx.API.SessionController do
-  use Phoenix.Controller
+  use Phoenix.Controller, formats: [:json]
 
   action_fallback NCDB2Phx.API.FallbackController
 

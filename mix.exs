@@ -1,7 +1,7 @@
 defmodule NCDB2Phx.MixProject do
   use Mix.Project
 
-  @version "0.2.4"
+  @version "0.2.5"
   @description "A comprehensive, production-ready import engine for Phoenix applications using Ash Framework. Enables importing data from no-code databases (Airtable, Baserow, Notion) and other sources (CSV, APIs, databases) with real-time progress tracking, error handling, and LiveView admin interface."
   @source_url "https://github.com/shotleybuilder/ncdb_2_phx"
   @homepage_url "https://github.com/shotleybuilder/ncdb_2_phx"
@@ -54,7 +54,7 @@ defmodule NCDB2Phx.MixProject do
   defp deps do
     [
       # Core Phoenix/Ash dependencies
-      {:phoenix, "~> 1.7.14"},
+      {:phoenix, "~> 1.7.14 or ~> 1.8.0"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 1.0"},
