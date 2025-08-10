@@ -1,7 +1,7 @@
 defmodule NCDB2Phx.MixProject do
   use Mix.Project
 
-  @version "0.2.5"
+  @version "0.2.6"
   @description "A comprehensive, production-ready import engine for Phoenix applications using Ash Framework. Enables importing data from no-code databases (Airtable, Baserow, Notion) and other sources (CSV, APIs, databases) with real-time progress tracking, error handling, and LiveView admin interface."
   @source_url "https://github.com/shotleybuilder/ncdb_2_phx"
   @homepage_url "https://github.com/shotleybuilder/ncdb_2_phx"
@@ -68,6 +68,7 @@ defmodule NCDB2Phx.MixProject do
       # HTTP clients and JSON
       {:req, "~> 0.5.0"},
       {:tesla, "~> 1.8"},
+      {:hackney, "~> 1.9"},
       {:jason, "~> 1.4"},
       
       # Database and migrations
