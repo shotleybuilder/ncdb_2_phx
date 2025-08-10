@@ -4,6 +4,7 @@ defmodule NCDB2Phx.Components do
   These are simple implementations that can be overridden by the host application.
   """
   use Phoenix.Component
+  import Phoenix.Component, only: [assign_rest: 2]
   
 
   @doc """
