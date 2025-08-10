@@ -41,16 +41,36 @@ defmodule MyAppWeb.Router do
 end
 ```
 
-### Step 2: Access the Interface
+### Step 2: Configure Available Resources
+
+Configure which Ash resources can be used as sync targets:
+
+```elixir
+# config/config.exs
+import NCDB2Phx.Config.ResourceConfig
+
+config :ncdb_2_phx,
+  available_resources: [
+    resource("Users", MyApp.Accounts.User, "System user accounts"),
+    resource("Cases", MyApp.Cases.Case, "Legal case records"),
+    resource("Notices", MyApp.Notices.Notice, "Court notices and documents")
+  ]
+
+# Alternative: Auto-discover from domains
+config :ncdb_2_phx,
+  sync_domains: [MyApp.Accounts, MyApp.Cases, MyApp.Notices]
+```
+
+### Step 3: Access the Interface
 
 Visit `http://localhost:4000/admin/sync` to access:
 - Dashboard overview
-- Session management  
+- Session management with resource dropdown populated
 - Real-time monitoring
 - Log viewing
 - System configuration
 
-That's it! You now have a complete admin interface for your sync operations.
+That's it! You now have a complete admin interface with working resource selection.
 
 ## Comprehensive Setup
 
@@ -121,6 +141,181 @@ GET  /sync/api/sessions/:id/logs       → Session logs with pagination
 POST /sync/api/sessions/:id/cancel     → Cancel running session
 POST /sync/api/sessions/:id/retry      → Retry failed session
 ```
+
+## Resource Configuration
+
+The admin interface needs to know which Ash resources are available as sync targets. NCDB2Phx provides multiple flexible approaches to configure this.
+
+### Configuration Approaches
+
+#### 1. Simple List Configuration (Recommended)
+
+The most straightforward approach using the helper module:
+
+```elixir
+# config/config.exs
+import NCDB2Phx.Config.ResourceConfig
+
+config :ncdb_2_phx,
+  available_resources: [
+    resource("Users", MyApp.Accounts.User, "System user accounts"),
+    resource("Cases", MyApp.Cases.Case, "Legal case records"),
+    resource("Notices", MyApp.Notices.Notice, "Court notices and documents"),
+    resource("Companies", MyApp.Companies.Company)
+  ]
+```
+
+This creates a dropdown in the admin interface with clear, descriptive names:
+- "Users (Accounts.User) - System user accounts"
+- "Cases (Cases.Case) - Legal case records"
+- "Notices (Notices.Notice) - Court notices and documents"  
+- "Companies (Companies.Company)"
+
+#### 2. Domain-Based Discovery
+
+Automatically discover resources from your Ash domains:
+
+```elixir
+# config/config.exs
+config :ncdb_2_phx,
+  sync_domains: [MyApp.Accounts, MyApp.Cases, MyApp.Notices]
+```
+
+This approach:
+- Automatically finds all resources in the specified domains
+- Uses the resource module name as the display name
+- Perfect for when all domain resources should be available for sync
+- Requires no maintenance when adding new resources
+
+#### 3. Custom Provider Module
+
+For complex scenarios, implement a custom resource provider:
+
+```elixir
+# config/config.exs  
+config :ncdb_2_phx, 
+  resource_provider: MyApp.SyncResourceProvider
+
+# lib/my_app/sync_resource_provider.ex
+defmodule MyApp.SyncResourceProvider do
+  @behaviour NCDB2Phx.Utilities.ResourceProvider
+
+  def get_available_resources do
+    # Custom logic - maybe based on user permissions, feature flags, etc.
+    base_resources = [
+      %{name: "Users", module: MyApp.Accounts.User, description: "User accounts"},
+      %{name: "Cases", module: MyApp.Cases.Case, description: "Legal cases"}
+    ]
+    
+    if Application.get_env(:my_app, :enable_notice_sync, false) do
+      [%{name: "Notices", module: MyApp.Notices.Notice} | base_resources]
+    else
+      base_resources
+    end
+  end
+end
+```
+
+#### 4. Runtime Discovery (Fallback)
+
+If no configuration is provided, NCDB2Phx automatically discovers all loaded Ash resources:
+
+```elixir
+# No configuration needed - automatic discovery
+# This scans all loaded modules for Ash resources
+```
+
+**Note:** Automatic discovery works but may include resources you don't want to sync. Explicit configuration is recommended for production.
+
+### Resource Configuration Options
+
+When using the `resource/3-4` helper, you can specify:
+
+```elixir
+import NCDB2Phx.Config.ResourceConfig
+
+resource(name, module, description \\ nil, opts \\ [])
+
+# Examples:
+resource("Users", MyApp.Accounts.User)
+resource("Cases", MyApp.Cases.Case, "Legal case records")
+resource("Notices", MyApp.Notices.Notice, "Court documents", 
+  domain: MyApp.Legal,
+  metadata: %{sync_frequency: :daily}
+)
+```
+
+**Parameters:**
+- `name` - Human-readable name displayed in the interface
+- `module` - The Ash resource module  
+- `description` - Optional description shown in dropdown
+- `opts[:domain]` - Specify the domain (useful for organization)
+- `opts[:metadata]` - Custom metadata for future extensibility
+
+### Alternative Configuration Formats
+
+NCDB2Phx accepts multiple configuration formats for flexibility:
+
+```elixir
+# Raw map format
+config :ncdb_2_phx,
+  available_resources: [
+    %{name: "Users", module: MyApp.Accounts.User, description: "User accounts"},
+    %{name: "Cases", module: MyApp.Cases.Case}
+  ]
+
+# Tuple format  
+config :ncdb_2_phx,
+  available_resources: [
+    {"Users", MyApp.Accounts.User},
+    {"Cases", MyApp.Cases.Case}
+  ]
+
+# Module-only format (names auto-generated)
+config :ncdb_2_phx,
+  available_resources: [
+    MyApp.Accounts.User,
+    MyApp.Cases.Case
+  ]
+```
+
+### Troubleshooting Resource Configuration
+
+#### Empty Dropdown
+
+If the target resource dropdown is empty:
+
+1. **Check Configuration**: Ensure you've added resource configuration to `config/config.exs`
+2. **Verify Modules**: Ensure the resource modules are loaded and available
+3. **Check Ash Resources**: Verify the modules are actual Ash resources with `YourModule.resource?()`
+4. **Domain Loading**: If using domain discovery, ensure domains are loaded when the admin interface mounts
+
+#### Debug Resource Discovery
+
+Enable debug mode to see what resources are found:
+
+```elixir
+# In your LiveView mount or IEx
+resources = NCDB2Phx.Utilities.ResourceProvider.get_available_resources()
+IO.inspect(resources, label: "Available Resources")
+```
+
+#### Production Considerations
+
+**Performance:**
+- Resource discovery runs once per LiveView mount
+- For frequently accessed admin interfaces, consider caching
+- Domain discovery is fast but configuration lists are faster
+
+**Security:**
+- Only include resources that should be accessible via sync
+- Consider implementing permission-based resource filtering
+- Sensitive resources should not be included in sync configuration
+
+**Maintenance:**  
+- Configuration lists require manual updates when adding resources
+- Domain discovery is automatic but includes all domain resources
+- Custom providers offer the most control but require more code
 
 ## Interface Components
 

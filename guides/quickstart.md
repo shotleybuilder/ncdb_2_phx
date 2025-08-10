@@ -132,9 +132,31 @@ iex> MyApp.Syncs.UserSync.sync_users_from_airtable()
 # 📊 Stats: 25 processed, 20 created, 5 updated
 ```
 
-## Step 5: Access the Admin Interface (Recommended)
+## Step 5: Configure Resources for Admin Interface (If Using Admin Interface)
 
-If you've installed the admin interface during setup, you can now monitor and manage your sync operations through the web interface.
+If you've installed the admin interface during setup, configure which resources are available for sync:
+
+```elixir
+# config/config.exs
+import NCDB2Phx.Config.ResourceConfig
+
+config :ncdb_2_phx,
+  available_resources: [
+    resource("Users", MyApp.Accounts.User, "System user accounts"),
+    # Add other resources you want to sync
+  ]
+
+# Alternative: Auto-discover from domains
+config :ncdb_2_phx,
+  sync_domains: [MyApp.Accounts, MyApp.OtherDomain]
+```
+
+**Why This is Needed:**
+The admin interface creates a dropdown of available sync targets. Without this configuration, the dropdown will be empty and you won't be able to create new syncs through the web interface.
+
+## Step 6: Access the Admin Interface
+
+You can now monitor and manage your sync operations through the web interface.
 
 ### Access the Dashboard
 
@@ -178,7 +200,7 @@ curl -H "Authorization: Bearer $TOKEN" \
   "http://localhost:4000/admin/sync/api/sessions/SESSION_ID/logs"
 ```
 
-## Step 6: Add Field Mapping (If Needed)
+## Step 7: Add Field Mapping (If Needed)
 
 If your Airtable fields don't match your Ash resource attributes exactly, add field mapping:
 
@@ -204,7 +226,7 @@ processing_config: %{
 }
 ```
 
-## Step 7: Monitor Sync Progress (Optional)
+## Step 8: Monitor Sync Progress (Optional)
 
 Add real-time monitoring to see sync progress:
 
@@ -287,7 +309,7 @@ Add the route:
 live "/sync-monitor", SyncMonitorLive
 ```
 
-## Step 8: Handle Common Data Types
+## Step 9: Handle Common Data Types
 
 ### Dates and Times
 
@@ -335,7 +357,7 @@ category_id: case airtable_record.data["Category"] do
 end
 ```
 
-## Step 9: Error Handling
+## Step 10: Error Handling
 
 Add robust error handling to your sync:
 
@@ -379,7 +401,7 @@ defp schedule_retry_later do
 end
 ```
 
-## Step 10: Automate Syncs (Optional)
+## Step 11: Automate Syncs (Optional)
 
 Set up automated syncing using Oban or similar:
 

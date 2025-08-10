@@ -129,8 +129,7 @@ defmodule NCDB2Phx.Live.SessionLive.New do
   end
 
   defp load_available_resources do
-    # TODO: Load from Ash registry
-    []
+    NCDB2Phx.Utilities.ResourceProvider.get_available_resources()
   end
 
   defp find_adapter(adapters, name) do
@@ -229,7 +228,7 @@ defmodule NCDB2Phx.Live.SessionLive.New do
       
       <div class="form-group">
         <label for="target_resource">Target Resource</label>
-        <.input field={@form[:target_resource]} type="select" options={build_resource_options(@resources)} />
+        <.input field={@form[:target_resource]} type="select" options={build_resource_options(@available_resources)} />
         <small>Select the Ash resource where data will be imported</small>
       </div>
       
@@ -410,6 +409,30 @@ defmodule NCDB2Phx.Live.SessionLive.New do
   end
 
   defp build_resource_options(resources) do
-    Enum.map(resources, &{&1.name, &1.module})
+    case resources do
+      [] -> 
+        [{"No resources configured - see documentation", ""}]
+      _ ->
+        resources
+        |> Enum.map(fn resource ->
+          label = build_resource_label(resource)
+          value = to_string(resource.module)
+          {label, value}
+        end)
+        |> Enum.sort_by(&elem(&1, 0))
+    end
+  end
+
+  defp build_resource_label(%{name: name, module: module, domain: _domain, description: description}) do
+    module_parts = module |> to_string() |> String.split(".") |> Enum.take(-2)
+    module_name = if length(module_parts) > 1, do: Enum.join(module_parts, "."), else: List.first(module_parts)
+    
+    base_label = "#{name} (#{module_name})"
+    
+    case description do
+      nil -> base_label
+      desc when is_binary(desc) and desc != "" -> "#{base_label} - #{desc}"
+      _ -> base_label
+    end
   end
 end
