@@ -660,6 +660,8 @@ mix test test/ncdb_2_phx/sync_engine_test.exs
 
 - [Installation Guide](guides/installation.md)
 - [Quick Start Guide](guides/quickstart.md)
+- [Admin Interface Guide](guides/admin-interface.md)
+- [Styling Guide](guides/styling.md)
 - [Adapter Development](guides/adapters.md)
 - [Configuration Reference](guides/configuration.md)
 - [API Documentation](https://hexdocs.pm/ncdb_2_phx)

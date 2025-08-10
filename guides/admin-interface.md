@@ -328,38 +328,127 @@ Custom admin layout example:
 
 ### Styling and Themes
 
-The admin interface provides CSS classes for comprehensive theming:
+The admin interface follows a **semantic CSS class** approach - the package provides meaningful class names and minimal base styling, while you control all visual design.
+
+**📖 For complete styling documentation, see: [Styling Guide](styling.md)**
+
+#### Quick Start Styling
+
+The interface provides these key CSS classes:
 
 ```css
-/* Custom sync admin styling */
-.sync-dashboard { /* Dashboard container */ }
-.sync-navbar { /* Navigation bar */ }
-.sync-main-content { /* Main content area */ }
-.session-card { /* Session display cards */ }
-.progress-bar { /* Progress indicators */ }
-.log-entry { /* Log entries */ }
-.metric-card { /* Performance metrics */ }
+/* Layout Components */
+.sync-dashboard              /* Main dashboard container */
+.dashboard-grid             /* Dashboard content grid */
+.sync-navbar                /* Navigation bar */
+.sync-main-content          /* Main content area */
+
+/* Session Components */
+.session-card               /* Individual session cards */
+.session-status--running    /* Running session state */
+.session-status--error      /* Error session state */
+.session-status--completed  /* Completed session state */
+
+/* Progress Components */
+.progress-bar               /* Progress bar container */
+.progress-fill              /* Progress bar fill */
+.progress-text              /* Progress percentage text */
+
+/* Monitoring Components */
+.metric-card                /* System metric displays */
+.monitor-dashboard          /* Monitoring interface */
+.session-monitor-card       /* Individual session monitors */
+
+/* Log Components */
+.log-entry                  /* Individual log entries */
+.log-error                  /* Error level logs */
+.log-warning                /* Warning level logs */
+.log-info                   /* Info level logs */
+
+/* Form Components */
+.form-input                 /* Form input fields */
+.form-label                 /* Form labels */
+.btn                        /* Button base class */
+.btn-primary                /* Primary buttons */
+.btn-outline                /* Outline buttons */
 ```
 
-Example custom theme:
+#### Framework Examples
 
+**Tailwind CSS:**
 ```css
-/* Brand colors */
+.session-card {
+  @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6 
+         hover:shadow-md transition-shadow;
+}
+
+.session-status--running {
+  @apply bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.progress-bar {
+  @apply w-full bg-gray-200 rounded-full h-2;
+}
+
+.progress-fill {
+  @apply bg-blue-600 h-2 rounded-full transition-all duration-300;
+}
+```
+
+**Bootstrap Integration:**
+```css
+.session-card {
+  @extend .card;
+  margin-bottom: 1rem;
+}
+
+.session-status--running {
+  @extend .badge;
+  @extend .badge-success;
+}
+
+.metric-card {
+  @extend .card;
+  @extend .text-center;
+}
+
+.log-entry.log-error {
+  @extend .list-group-item-danger;
+}
+```
+
+**Custom Brand Theme:**
+```css
 :root {
-  --sync-primary: #0066cc;
+  --sync-primary: #your-brand-primary;
   --sync-success: #28a745;
   --sync-warning: #ffc107;
   --sync-error: #dc3545;
 }
 
-/* Dashboard customization */
 .sync-dashboard {
+  font-family: 'Your Brand Font', sans-serif;
   background: var(--your-brand-bg);
-  color: var(--your-brand-text);
 }
 
-.sync-navbar {
-  background: var(--your-brand-primary);
+.session-card {
+  background: white;
+  border: 1px solid var(--your-brand-border);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.session-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-primary {
+  background: var(--sync-primary);
+  border: 1px solid var(--sync-primary);
+  color: white;
+  font-weight: 600;
 }
 ```
 
@@ -681,6 +770,7 @@ end
 - [Installation Guide](installation.md) - Setup and configuration
 - [Quickstart Guide](quickstart.md) - Getting started quickly
 - [Configuration Guide](configuration.md) - Advanced configuration options
+- [Styling Guide](styling.md) - Complete CSS class reference and theming examples
 - [API Documentation](https://hexdocs.pm/ncdb_2_phx) - Complete API reference
 
 ### Community
