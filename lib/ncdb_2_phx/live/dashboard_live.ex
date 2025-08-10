@@ -24,6 +24,26 @@ defmodule NCDB2Phx.Live.DashboardLive do
   end
 
   @impl true
+  def handle_event("new_sync", _params, socket) do
+    {:noreply, push_navigate(socket, to: "/admin/sync/sessions/new")}
+  end
+
+  @impl true
+  def handle_event("view_sessions", _params, socket) do
+    {:noreply, push_navigate(socket, to: "/admin/sync/sessions")}
+  end
+
+  @impl true
+  def handle_event("view_logs", _params, socket) do
+    {:noreply, push_navigate(socket, to: "/admin/sync/logs")}
+  end
+
+  @impl true
+  def handle_event("system_monitor", _params, socket) do
+    {:noreply, push_navigate(socket, to: "/admin/sync/monitor")}
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
     <div class="sync-dashboard">
