@@ -10,11 +10,14 @@ defmodule NCDB2Phx.Components do
   Basic input component with support for various input types.
   """
   def input(assigns) do
-    assigns = assign_new(assigns, :type, fn -> "text" end)
-    assigns = assign_new(assigns, :class, fn -> "form-input" end)
-    assigns = assign_new(assigns, :id, fn -> nil end)
-    assigns = assign_new(assigns, :name, fn -> nil end)
-    assigns = assign_new(assigns, :value, fn -> nil end)
+    assigns = 
+      assigns
+      |> assign_new(:type, fn -> "text" end)
+      |> assign_new(:class, fn -> "form-input" end)
+      |> assign_new(:id, fn -> nil end)
+      |> assign_new(:name, fn -> nil end)
+      |> assign_new(:value, fn -> nil end)
+      |> assign_rest(~w(type class id name value)a)
     
     ~H"""
     <input 
@@ -32,8 +35,11 @@ defmodule NCDB2Phx.Components do
   Basic button component.
   """
   def button(assigns) do
-    assigns = assign_new(assigns, :type, fn -> "button" end)
-    assigns = assign_new(assigns, :class, fn -> "btn" end)
+    assigns = 
+      assigns
+      |> assign_new(:type, fn -> "button" end)
+      |> assign_new(:class, fn -> "btn" end)
+      |> assign_rest(~w(type class)a)
     
     ~H"""
     <button type={@type} class={@class} {@rest}>
@@ -46,8 +52,11 @@ defmodule NCDB2Phx.Components do
   Basic label component.
   """
   def label(assigns) do
-    assigns = assign_new(assigns, :class, fn -> "form-label" end)
-    assigns = assign_new(assigns, :for, fn -> nil end)
+    assigns = 
+      assigns
+      |> assign_new(:class, fn -> "form-label" end)
+      |> assign_new(:for, fn -> nil end)
+      |> assign_rest(~w(class for)a)
     
     ~H"""
     <label class={@class} for={@for} {@rest}>
@@ -60,8 +69,11 @@ defmodule NCDB2Phx.Components do
   Basic form wrapper component. Note: renamed to avoid conflict with Phoenix.Component.form/1
   """
   def simple_form(assigns) do
-    assigns = assign_new(assigns, :class, fn -> "form" end)
-    assigns = assign_new(assigns, :method, fn -> "post" end)
+    assigns = 
+      assigns
+      |> assign_new(:class, fn -> "form" end)
+      |> assign_new(:method, fn -> "post" end)
+      |> assign_rest(~w(class method)a)
     
     ~H"""
     <form class={@class} method={@method} {@rest}>
@@ -100,7 +112,10 @@ defmodule NCDB2Phx.Components do
   Basic table component.
   """
   def table(assigns) do
-    assigns = assign_new(assigns, :class, fn -> "table" end)
+    assigns = 
+      assigns
+      |> assign_new(:class, fn -> "table" end)
+      |> assign_rest(~w(class)a)
     
     ~H"""
     <table class={@class} {@rest}>
