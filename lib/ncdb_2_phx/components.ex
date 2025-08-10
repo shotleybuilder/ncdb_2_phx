@@ -4,22 +4,19 @@ defmodule NCDB2Phx.Components do
   These are simple implementations that can be overridden by the host application.
   """
   use Phoenix.Component
-  import Phoenix.Component, only: [assign_rest: 2]
   
 
   @doc """
   Basic input component with support for various input types.
   """
+  attr :type, :string, default: "text"
+  attr :class, :string, default: "form-input"
+  attr :id, :string, default: nil
+  attr :name, :string, default: nil
+  attr :value, :string, default: nil
+  attr :rest, :global, include: ~w(placeholder required disabled readonly)
+  
   def input(assigns) do
-    assigns = 
-      assigns
-      |> assign_new(:type, fn -> "text" end)
-      |> assign_new(:class, fn -> "form-input" end)
-      |> assign_new(:id, fn -> nil end)
-      |> assign_new(:name, fn -> nil end)
-      |> assign_new(:value, fn -> nil end)
-      |> assign_rest(~w(type class id name value)a)
-    
     ~H"""
     <input 
       type={@type}
@@ -35,13 +32,13 @@ defmodule NCDB2Phx.Components do
   @doc """
   Basic button component.
   """
+  attr :type, :string, default: "button"
+  attr :class, :string, default: "btn"
+  attr :rest, :global, include: ~w(disabled form)
+  
+  slot :inner_block, required: true
+  
   def button(assigns) do
-    assigns = 
-      assigns
-      |> assign_new(:type, fn -> "button" end)
-      |> assign_new(:class, fn -> "btn" end)
-      |> assign_rest(~w(type class)a)
-    
     ~H"""
     <button type={@type} class={@class} {@rest}>
       <%= render_slot(@inner_block) %>
@@ -52,13 +49,13 @@ defmodule NCDB2Phx.Components do
   @doc """
   Basic label component.
   """
+  attr :class, :string, default: "form-label"
+  attr :for, :string, default: nil
+  attr :rest, :global
+  
+  slot :inner_block, required: true
+  
   def label(assigns) do
-    assigns = 
-      assigns
-      |> assign_new(:class, fn -> "form-label" end)
-      |> assign_new(:for, fn -> nil end)
-      |> assign_rest(~w(class for)a)
-    
     ~H"""
     <label class={@class} for={@for} {@rest}>
       <%= render_slot(@inner_block) %>
@@ -69,13 +66,13 @@ defmodule NCDB2Phx.Components do
   @doc """
   Basic form wrapper component. Note: renamed to avoid conflict with Phoenix.Component.form/1
   """
+  attr :class, :string, default: "form"
+  attr :method, :string, default: "post"
+  attr :rest, :global, include: ~w(action enctype novalidate target)
+  
+  slot :inner_block, required: true
+  
   def simple_form(assigns) do
-    assigns = 
-      assigns
-      |> assign_new(:class, fn -> "form" end)
-      |> assign_new(:method, fn -> "post" end)
-      |> assign_rest(~w(class method)a)
-    
     ~H"""
     <form class={@class} method={@method} {@rest}>
       <%= render_slot(@inner_block) %>
@@ -112,12 +109,12 @@ defmodule NCDB2Phx.Components do
   @doc """
   Basic table component.
   """
+  attr :class, :string, default: "table"
+  attr :rest, :global
+  
+  slot :inner_block, required: true
+  
   def table(assigns) do
-    assigns = 
-      assigns
-      |> assign_new(:class, fn -> "table" end)
-      |> assign_rest(~w(class)a)
-    
     ~H"""
     <table class={@class} {@rest}>
       <%= render_slot(@inner_block) %>
